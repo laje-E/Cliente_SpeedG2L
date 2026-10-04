@@ -2,6 +2,7 @@ package com.g2l.speedg2l.entidades;
 
 import com.badlogic.gdx.math.Rectangle;
 import com.g2l.speedg2l.animaciones.AnimacionEntidad;
+import com.g2l.speedg2l.cliente.HiloCliente;
 import com.g2l.speedg2l.utilidades.Direccion;
 import com.g2l.speedg2l.utilidades.Entradas;
 
@@ -32,6 +33,11 @@ public class Jugador extends Entidad{
         animacion.iniciar();
     }
 
+    public void asignarPosicionJugador (int posicionX, int posicionY) {
+        this.posicionX = (float) posicionX;
+        this.posicionY = (float) posicionY;
+    }
+
     public void animar(float delta) {
         if (acelerandoDerecha || acelerandoIzquierda) {
             animacion.animar(delta);
@@ -51,292 +57,297 @@ public class Jugador extends Entidad{
         animacion.cerrar();
     }
 
-    public void moverJugador(Entradas entradas, Jugadores numeroJugador){
+    public void moverJugador(Entradas entradas, Jugadores numeroJugador, HiloCliente hiloCliente){
         switch (numeroJugador){
             case JUGADOR_1:
                 if (entradas.izquierda()){
-                    acelerandoIzquierda = true;
+                    hiloCliente.enviarMensaje("Aprete-Izquierda");
+//                    acelerandoIzquierda = true;
                 }
                 else{
-                    acelerandoIzquierda = false;
+                    hiloCliente.enviarMensaje("NoAprete-Izquierda");
+//                    acelerandoIzquierda = false;
                 }
 
                 if (entradas.derecha()){
-                    acelerandoDerecha = true;
+                    hiloCliente.enviarMensaje("Aprete-Derecha");
+//                    acelerandoDerecha = true;
                 }
                 else{
-                    acelerandoDerecha = false;
+                    hiloCliente.enviarMensaje("NoAprete-Derecha");
+//                    acelerandoDerecha = false;
                 }
                 if (entradas.arriba() && !saltando){
-                    velocidadYMenosGravedad = VELOCIDAD_Y;
-                    this.saltando = true;
+                    hiloCliente.enviarMensaje("Aprete-Arriba");
+//                    velocidadYMenosGravedad = VELOCIDAD_Y;
+//                    this.saltando = true;
                 }
 
                 break;
 
             case JUGADOR_2:
                 if (entradas.flechaIzquierda()){
-                    acelerandoIzquierda = true;
+//                    acelerandoIzquierda = true;
                 }
                 else{
-                    acelerandoIzquierda = false;
+//                    acelerandoIzquierda = false;
                 }
 
                 if (entradas.flechaDerecha()){
-                    acelerandoDerecha = true;
+//                    acelerandoDerecha = true;
                 }
                 else{
-                    acelerandoDerecha = false;
+//                    acelerandoDerecha = false;
                 }
                 if (entradas.flechaArriba() && !saltando){
-                    velocidadYMenosGravedad = VELOCIDAD_Y;
-                    this.saltando = true;
+//                    velocidadYMenosGravedad = VELOCIDAD_Y;
+//                    this.saltando = true;
                 }
                 break;
         }
 
     }
 
-    public void actualizarFisicas(ArrayList<Entidad> listaDeEntidades, float delta){
-
-            actualizarMovimientoVertical(listaDeEntidades, delta);
-
-        if (acelerandoDerecha){
-            acelerarDerecha(listaDeEntidades, delta);
-        }
-        else{
-            desAcelerarDerecha(listaDeEntidades, delta);
-        }
-
-        if(acelerandoIzquierda){
-            acelerarIzquierda(listaDeEntidades, delta);
-        }
-        else{
-            desAcelerarIzquierda(listaDeEntidades, delta);
-        }
-    }
-
-    private void actualizarMovimientoVertical(ArrayList<Entidad> listaDeEntidades, float delta) {
-
-        velocidadYMenosGravedad -= gravedad * delta;
-
-        double desplazamientoY = velocidadYMenosGravedad * delta;
-
-        Entidad entidadColisionada =
-            hayColisionVertical(listaDeEntidades, desplazamientoY);
-
-        if (entidadColisionada instanceof Plataforma) {
-
-            if (desplazamientoY < 0) {
-                // Está cayendo sobre la plataforma
-
-                posicionY = entidadColisionada.getPosicionY()
-                    + entidadColisionada.getAlto();
-
-                velocidadYMenosGravedad = 0;
-                saltando = false;
-            }
-            else {
-                // Está subiendo y golpeó la parte inferior
-
-                velocidadYMenosGravedad = 0;
-            }
-
-        }
-        if (entidadColisionada == null){
-            // No hay plataforma: continúa moviéndose
-            posicionY += desplazamientoY;
-        }
-
-        // Evitar atravesar el suelo
-        if (posicionY <= posicionSuelo) {
-            posicionY = posicionSuelo;
-            velocidadYMenosGravedad = 0;
-            saltando = false;
-        }
-
-        actualizarHitbox();
-    }
-
-
-    protected void rebotar(ArrayList<Entidad> listaDeEntidades, float delta){
-        actualizarMovimientoVertical(listaDeEntidades, delta);
-        if (velocidadConAceleracionDerecha > 5){
-            variacionVelocidad(0.5);
-        }
-        else if (velocidadConAceleracionDerecha > 0){
-            velocidadConAceleracionDerecha = 2.5;
-        }
-        else if (velocidadConAceleracionIzquierda > 5){
-            variacionVelocidad(0.5);
-        }
-        else if (velocidadConAceleracionIzquierda > 0){
-            velocidadConAceleracionIzquierda = 5;
-        }
-        else if (velocidadConAceleracionIzquierda == 0 && velocidadConAceleracionDerecha == 0){
-            velocidadConAceleracionDerecha = 2.5;
-        }
-    }
-
-    protected void variacionVelocidad(double multiplicadorDeVariacion){
-        if (velocidadConAceleracionDerecha > 0){
-            velocidadConAceleracionDerecha *= multiplicadorDeVariacion;
-        }
-        else if (velocidadConAceleracionIzquierda > 0){
-            velocidadConAceleracionIzquierda *= multiplicadorDeVariacion;
-        }
-    }
-
-    private Entidad hayColisionVertical(ArrayList<Entidad> listaDeEntidades, double aceleracion) {
-
-        boolean hayColision = false;
-        Entidad entidadColisionada = null;
-
-        Rectangle futuraHitbox = new Rectangle(
-            (float) getPosicionX(),
-            (float) getPosicionY() + (float) aceleracion,
-            getAncho(),
-            getAlto()
-        );
-
-        int i = 0;
-
-        while(i<listaDeEntidades.size() && !hayColision){
-
-            if(futuraHitbox.overlaps(listaDeEntidades.get(i).getHitbox())){
-                hayColision = true;
-                entidadColisionada = listaDeEntidades.get(i);
-            }
-
-            i++;
-        }
-
-        return entidadColisionada;
-    }
-
-
-    private void acelerarDerecha(ArrayList<Entidad> listaDeEntidades, float delta){
-        if(velocidadConAceleracionDerecha < velocidadMaxima){
-            this.velocidadConAceleracionDerecha += aceleracion * delta;
-            if(velocidadConAceleracionDerecha > velocidadMaxima){
-                velocidadConAceleracionDerecha = velocidadMaxima;
-            }
-        }
-        double desplazamientoX = velocidadConAceleracionDerecha * delta;
-
-        Entidad entidadColisionada = hayColisionHorizontal(listaDeEntidades, desplazamientoX);
-        trabajarColisionHorizontal(entidadColisionada, Direccion.DERECHA, desplazamientoX);
-        actualizarHitbox();
-        // System.out.println("La aceleracion del jugador es de: " + velocidadConAceleracionDerecha);
-    }
-
-    private void desAcelerarDerecha(ArrayList<Entidad> listaDeEntidades, float delta) {
-        if (velocidadConAceleracionDerecha > 0) {
-            velocidadConAceleracionDerecha -= aceleracion * delta;
-            if(velocidadConAceleracionDerecha < 0){
-                velocidadConAceleracionDerecha = 0;
-            }
-        }
-        double desplazamientoX = velocidadConAceleracionDerecha * delta;
-
-        Entidad entidadColisionada = hayColisionHorizontal(listaDeEntidades, desplazamientoX);
-        trabajarColisionHorizontal(entidadColisionada, Direccion.DERECHA, desplazamientoX);
-        actualizarHitbox();
-    }
-
-    private void acelerarIzquierda (ArrayList < Entidad > listaDeEntidades, float delta) {
-            if (velocidadConAceleracionIzquierda < velocidadMaxima) {
-                velocidadConAceleracionIzquierda += aceleracion * delta;
-                if (velocidadConAceleracionIzquierda > velocidadMaxima){
-                    velocidadConAceleracionIzquierda = velocidadMaxima;
-                }
-            }
-            double desplazamientoX = velocidadConAceleracionIzquierda * delta;
-
-            Entidad entidadColisionada = hayColisionHorizontal(listaDeEntidades, -desplazamientoX);
-            trabajarColisionHorizontal(entidadColisionada, Direccion.IZQUIERDA, desplazamientoX);
-            actualizarHitbox();
-    }
-
-    private void desAcelerarIzquierda (ArrayList < Entidad > listaDeEntidades, float delta) {
-            if (velocidadConAceleracionIzquierda > 0) {
-                velocidadConAceleracionIzquierda -= aceleracion * delta;
-                if (velocidadConAceleracionIzquierda < 0){
-                    velocidadConAceleracionIzquierda = 0;
-                }
-            }
-            double desplazamientoX = velocidadConAceleracionIzquierda * delta;
-
-            Entidad entidadColisionada = hayColisionHorizontal(listaDeEntidades, -desplazamientoX);
-            trabajarColisionHorizontal(entidadColisionada, Direccion.IZQUIERDA, desplazamientoX);
-            actualizarHitbox();
-    }
-
-    private Entidad hayColisionHorizontal (ArrayList < Entidad > listaDeEntidades,double aceleracion){
-
-            boolean hayColision = false;
-            Entidad entidadColisionada = null;
-
-            Rectangle futuraHitbox = new Rectangle(
-                getPosicionX() + (float) aceleracion,
-                getPosicionY(),
-                getAncho(),
-                getAlto()
-            );
-
-            int i = 0;
-
-            while (i < listaDeEntidades.size() && !hayColision) {
-
-                if (futuraHitbox.overlaps(listaDeEntidades.get(i).getHitbox())) {
-                    hayColision = true;
-                    entidadColisionada = listaDeEntidades.get(i);
-                }
-
-                i++;
-            }
-
-            return entidadColisionada;
-    }
-
-
-    private void trabajarColisionHorizontal(Entidad entidadColisionada, Direccion direccionMovimiento, double desplazamientoX) {
-
-        switch (direccionMovimiento) {
-            case DERECHA:
-
-                if (entidadColisionada == null){
-                    posicionX += desplazamientoX;
-                }
-                else if (entidadColisionada instanceof Plataforma) {
-                    velocidadConAceleracionDerecha = 0;
-                }
-                else if (entidadColisionada instanceof Obstaculo){
-                    Obstaculo obstaculoColisionado = (Obstaculo) entidadColisionada;
-                    if (obstaculoColisionado.getColisionLateral()){
-                        obstaculoColisionado.alColisionar(this);
-                    }
-                }
-
-                break;
-
-
-            case IZQUIERDA:
-
-                if (entidadColisionada == null){
-                    posicionX -= desplazamientoX;
-                }
-                else if (entidadColisionada instanceof Plataforma) {
-                    velocidadConAceleracionIzquierda = 0;
-                }
-                else if (entidadColisionada instanceof Obstaculo){
-                    Obstaculo obstaculoColisionado = (Obstaculo) entidadColisionada;
-                    if (obstaculoColisionado.getColisionLateral()){
-                        obstaculoColisionado.alColisionar(this);
-                    }
-                }
-        }
-    }
+//    public void actualizarFisicas(ArrayList<Entidad> listaDeEntidades, float delta){
+//
+//            actualizarMovimientoVertical(listaDeEntidades, delta);
+//
+//        if (acelerandoDerecha){
+//            acelerarDerecha(listaDeEntidades, delta);
+//        }
+//        else{
+//            desAcelerarDerecha(listaDeEntidades, delta);
+//        }
+//
+//        if(acelerandoIzquierda){
+//            acelerarIzquierda(listaDeEntidades, delta);
+//        }
+//        else{
+//            desAcelerarIzquierda(listaDeEntidades, delta);
+//        }
+//    }
+//
+//    private void actualizarMovimientoVertical(ArrayList<Entidad> listaDeEntidades, float delta) {
+//
+//        velocidadYMenosGravedad -= gravedad * delta;
+//
+//        double desplazamientoY = velocidadYMenosGravedad * delta;
+//
+//        Entidad entidadColisionada =
+//            hayColisionVertical(listaDeEntidades, desplazamientoY);
+//
+//        if (entidadColisionada instanceof Plataforma) {
+//
+//            if (desplazamientoY < 0) {
+//                // Está cayendo sobre la plataforma
+//
+//                posicionY = entidadColisionada.getPosicionY()
+//                    + entidadColisionada.getAlto();
+//
+//                velocidadYMenosGravedad = 0;
+//                saltando = false;
+//            }
+//            else {
+//                // Está subiendo y golpeó la parte inferior
+//
+//                velocidadYMenosGravedad = 0;
+//            }
+//
+//        }
+//        if (entidadColisionada == null){
+//            // No hay plataforma: continúa moviéndose
+//            posicionY += desplazamientoY;
+//        }
+//
+//        // Evitar atravesar el suelo
+//        if (posicionY <= posicionSuelo) {
+//            posicionY = posicionSuelo;
+//            velocidadYMenosGravedad = 0;
+//            saltando = false;
+//        }
+//
+//        actualizarHitbox();
+//    }
+//
+//
+//    protected void rebotar(ArrayList<Entidad> listaDeEntidades, float delta){
+//        actualizarMovimientoVertical(listaDeEntidades, delta);
+//        if (velocidadConAceleracionDerecha > 5){
+//            variacionVelocidad(0.5);
+//        }
+//        else if (velocidadConAceleracionDerecha > 0){
+//            velocidadConAceleracionDerecha = 2.5;
+//        }
+//        else if (velocidadConAceleracionIzquierda > 5){
+//            variacionVelocidad(0.5);
+//        }
+//        else if (velocidadConAceleracionIzquierda > 0){
+//            velocidadConAceleracionIzquierda = 5;
+//        }
+//        else if (velocidadConAceleracionIzquierda == 0 && velocidadConAceleracionDerecha == 0){
+//            velocidadConAceleracionDerecha = 2.5;
+//        }
+//    }
+//
+//    protected void variacionVelocidad(double multiplicadorDeVariacion){
+//        if (velocidadConAceleracionDerecha > 0){
+//            velocidadConAceleracionDerecha *= multiplicadorDeVariacion;
+//        }
+//        else if (velocidadConAceleracionIzquierda > 0){
+//            velocidadConAceleracionIzquierda *= multiplicadorDeVariacion;
+//        }
+//    }
+//
+//    private Entidad hayColisionVertical(ArrayList<Entidad> listaDeEntidades, double aceleracion) {
+//
+//        boolean hayColision = false;
+//        Entidad entidadColisionada = null;
+//
+//        Rectangle futuraHitbox = new Rectangle(
+//            (float) getPosicionX(),
+//            (float) getPosicionY() + (float) aceleracion,
+//            getAncho(),
+//            getAlto()
+//        );
+//
+//        int i = 0;
+//
+//        while(i<listaDeEntidades.size() && !hayColision){
+//
+//            if(futuraHitbox.overlaps(listaDeEntidades.get(i).getHitbox())){
+//                hayColision = true;
+//                entidadColisionada = listaDeEntidades.get(i);
+//            }
+//
+//            i++;
+//        }
+//
+//        return entidadColisionada;
+//    }
+//
+//
+//    private void acelerarDerecha(ArrayList<Entidad> listaDeEntidades, float delta){
+//        if(velocidadConAceleracionDerecha < velocidadMaxima){
+//            this.velocidadConAceleracionDerecha += aceleracion * delta;
+//            if(velocidadConAceleracionDerecha > velocidadMaxima){
+//                velocidadConAceleracionDerecha = velocidadMaxima;
+//            }
+//        }
+//        double desplazamientoX = velocidadConAceleracionDerecha * delta;
+//
+//        Entidad entidadColisionada = hayColisionHorizontal(listaDeEntidades, desplazamientoX);
+//        trabajarColisionHorizontal(entidadColisionada, Direccion.DERECHA, desplazamientoX);
+//        actualizarHitbox();
+//        // System.out.println("La aceleracion del jugador es de: " + velocidadConAceleracionDerecha);
+//    }
+//
+//    private void desAcelerarDerecha(ArrayList<Entidad> listaDeEntidades, float delta) {
+//        if (velocidadConAceleracionDerecha > 0) {
+//            velocidadConAceleracionDerecha -= aceleracion * delta;
+//            if(velocidadConAceleracionDerecha < 0){
+//                velocidadConAceleracionDerecha = 0;
+//            }
+//        }
+//        double desplazamientoX = velocidadConAceleracionDerecha * delta;
+//
+//        Entidad entidadColisionada = hayColisionHorizontal(listaDeEntidades, desplazamientoX);
+//        trabajarColisionHorizontal(entidadColisionada, Direccion.DERECHA, desplazamientoX);
+//        actualizarHitbox();
+//    }
+//
+//    private void acelerarIzquierda (ArrayList < Entidad > listaDeEntidades, float delta) {
+//            if (velocidadConAceleracionIzquierda < velocidadMaxima) {
+//                velocidadConAceleracionIzquierda += aceleracion * delta;
+//                if (velocidadConAceleracionIzquierda > velocidadMaxima){
+//                    velocidadConAceleracionIzquierda = velocidadMaxima;
+//                }
+//            }
+//            double desplazamientoX = velocidadConAceleracionIzquierda * delta;
+//
+//            Entidad entidadColisionada = hayColisionHorizontal(listaDeEntidades, -desplazamientoX);
+//            trabajarColisionHorizontal(entidadColisionada, Direccion.IZQUIERDA, desplazamientoX);
+//            actualizarHitbox();
+//    }
+//
+//    private void desAcelerarIzquierda (ArrayList < Entidad > listaDeEntidades, float delta) {
+//            if (velocidadConAceleracionIzquierda > 0) {
+//                velocidadConAceleracionIzquierda -= aceleracion * delta;
+//                if (velocidadConAceleracionIzquierda < 0){
+//                    velocidadConAceleracionIzquierda = 0;
+//                }
+//            }
+//            double desplazamientoX = velocidadConAceleracionIzquierda * delta;
+//
+//            Entidad entidadColisionada = hayColisionHorizontal(listaDeEntidades, -desplazamientoX);
+//            trabajarColisionHorizontal(entidadColisionada, Direccion.IZQUIERDA, desplazamientoX);
+//            actualizarHitbox();
+//    }
+//
+//    private Entidad hayColisionHorizontal (ArrayList < Entidad > listaDeEntidades,double aceleracion){
+//
+//            boolean hayColision = false;
+//            Entidad entidadColisionada = null;
+//
+//            Rectangle futuraHitbox = new Rectangle(
+//                getPosicionX() + (float) aceleracion,
+//                getPosicionY(),
+//                getAncho(),
+//                getAlto()
+//            );
+//
+//            int i = 0;
+//
+//            while (i < listaDeEntidades.size() && !hayColision) {
+//
+//                if (futuraHitbox.overlaps(listaDeEntidades.get(i).getHitbox())) {
+//                    hayColision = true;
+//                    entidadColisionada = listaDeEntidades.get(i);
+//                }
+//
+//                i++;
+//            }
+//
+//            return entidadColisionada;
+//    }
+//
+//
+//    private void trabajarColisionHorizontal(Entidad entidadColisionada, Direccion direccionMovimiento, double desplazamientoX) {
+//
+//        switch (direccionMovimiento) {
+//            case DERECHA:
+//
+//                if (entidadColisionada == null){
+//                    posicionX += desplazamientoX;
+//                }
+//                else if (entidadColisionada instanceof Plataforma) {
+//                    velocidadConAceleracionDerecha = 0;
+//                }
+//                else if (entidadColisionada instanceof Obstaculo){
+//                    Obstaculo obstaculoColisionado = (Obstaculo) entidadColisionada;
+//                    if (obstaculoColisionado.getColisionLateral()){
+//                        obstaculoColisionado.alColisionar(this);
+//                    }
+//                }
+//
+//                break;
+//
+//
+//            case IZQUIERDA:
+//
+//                if (entidadColisionada == null){
+//                    posicionX -= desplazamientoX;
+//                }
+//                else if (entidadColisionada instanceof Plataforma) {
+//                    velocidadConAceleracionIzquierda = 0;
+//                }
+//                else if (entidadColisionada instanceof Obstaculo){
+//                    Obstaculo obstaculoColisionado = (Obstaculo) entidadColisionada;
+//                    if (obstaculoColisionado.getColisionLateral()){
+//                        obstaculoColisionado.alColisionar(this);
+//                    }
+//                }
+//        }
+//    }
 
     public boolean colisionaCon(Entidad entidad) {
         return getHitbox().overlaps(entidad.getHitbox());

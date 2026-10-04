@@ -27,6 +27,7 @@ import com.g2l.speedg2l.utilidades.Render;
 
 import java.util.ArrayList;
 
+
 public class PantallaJuego extends Pantalla {
 
     private Stage stage;
@@ -61,88 +62,92 @@ public class PantallaJuego extends Pantalla {
 
     @Override
     public void show() {
-//        b = Render.batch;
-//
-//        crearYaplicarMusica();
-//
-//        camara = new Camara(configViewport);
-//        mapa = new Mapa(Recursos.NIVEL_1);
-//        entradas = new Entradas();
-//        jugador = new Jugador(70.0f, 70.0f, 0.0f, 33.0f);
-//        jugador2 = new Jugador(70.0f, 70.0f, 25.0f, 33.0f);
-//        hud = new Hud();
-//
-//        meta = new Meta(50.0f, 1000.0f, 8000.0f, 100.0f);
-//
-//        listaDeEntidades = new ArrayList<>();
-//        listaDeObstaculos = new ArrayList<>();
-//
-//        textoPausa.setTexto("PAUSADO");
-//
+        b = Render.batch;
+
+        crearYaplicarMusica();
+
+        camara = new Camara(configViewport);
+        mapa = new Mapa(Recursos.NIVEL_1);
+        entradas = new Entradas();
+        jugador = new Jugador(70.0f, 70.0f, 0.0f, 33.0f);
+        jugador2 = new Jugador(70.0f, 70.0f, 25.0f, 33.0f);
+        hud = new Hud();
+
+        meta = new Meta(50.0f, 1000.0f, 8000.0f, 100.0f);
+
+        listaDeEntidades = new ArrayList<>();
+        listaDeObstaculos = new ArrayList<>();
+
+        textoPausa.setTexto("PAUSADO");
+
 //        cargarColisionesDesdeMapa();
-//
-//        stage = new Stage(
-//            new FitViewport(
-//                Config.getAnchoJuego(),
-//                Config.getAltoJuego()
-//            )
-//        );
+
+        stage = new Stage(
+            new FitViewport(
+                Config.getAnchoJuego(),
+                Config.getAltoJuego()
+            )
+        );
 
         hiloCliente = new HiloCliente();
     }
 
     private void crearYaplicarMusica() {
 
-//        if (Render.musicaJuego == null) {
-//            Render.musicaJuego = new Musica(Recursos.MUSICA_JUEGO);
-//            Render.musicaJuego.repetir(true);
-//        }
-//        if (Config.isSonidoSilenciado()) {
-//            Render.musicaJuego.setVolumen(0.0f);
-//        } else {
-//            Render.musicaJuego.setVolumen(Config.getVolumenMaster());
-//        }
-//
-//        musicaJuego = Render.musicaJuego;
-//
-//        if (!musicaJuego.estaReproduciendo()) {
-//            musicaJuego.reproducir();
-//        }
+        if (Render.musicaJuego == null) {
+            Render.musicaJuego = new Musica(Recursos.MUSICA_JUEGO);
+            Render.musicaJuego.repetir(true);
+        }
+        if (Config.isSonidoSilenciado()) {
+            Render.musicaJuego.setVolumen(0.0f);
+        } else {
+            Render.musicaJuego.setVolumen(Config.getVolumenMaster());
+        }
+
+        musicaJuego = Render.musicaJuego;
+
+        if (!musicaJuego.estaReproduciendo()) {
+            musicaJuego.reproducir();
+        }
     }
 
     @Override
     public void render(float delta) {
-//        delta = Gdx.graphics.getDeltaTime();
-//
-//        Render.limpiarPantalla();
-//
-//        camara.seguirJugador(jugador);
-//
-//        mapa.dibujar(camara.getCamara());
-//
-//        b.setProjectionMatrix(camara.getCamara().combined);
-//        b.begin();
-//
-//        if(entradas.escape()){
+        delta = Gdx.graphics.getDeltaTime();
+
+        Render.limpiarPantalla();
+
+        camara.seguirJugador(jugador);
+
+        mapa.dibujar(camara.getCamara());
+
+        b.setProjectionMatrix(camara.getCamara().combined);
+        b.begin();
+
+        if(entradas.escape()){
 //            pausado = !pausado;
-//        }
+        }
 //
-//        if(!pausado) {
-//            if(!musicaJuego.estaReproduciendo()) {
-//                musicaJuego.reproducir();
-//            }
-//            jugador.moverJugador(entradas, Jugadores.JUGADOR_1);
-//            jugador.actualizarFisicas(listaDeEntidades, delta);
-//            jugador.animar(delta);
-//            jugador2.moverJugador(entradas, Jugadores.JUGADOR_2);
-//            jugador2.actualizarFisicas(listaDeEntidades, delta);
-//            jugador2.animar(delta);
-//            hud.actualizar();
-//            if(jugador.colisionaCon(meta)){
-//                cambiarPantalla(new PantallaFin(juego, hud.getTiempo()));
-//                musicaJuego.cerrar();
-//            }
-//        } else if(pausado){
+        if(!pausado) {
+            if (!musicaJuego.estaReproduciendo()) {
+                musicaJuego.reproducir();
+            }
+            jugador.moverJugador(entradas, Jugadores.JUGADOR_1, hiloCliente);
+//          jugador.actualizarFisicas(listaDeEntidades, delta);
+            jugador.animar(delta);
+            jugador2.moverJugador(entradas, Jugadores.JUGADOR_2, hiloCliente);
+//          jugador2.actualizarFisicas(listaDeEntidades, delta);
+            jugador2.animar(delta);
+
+            asignarPosicionJugador(jugador, hiloCliente.getPosicionJugadores(Jugadores.JUGADOR_1));
+
+            hud.actualizar();
+            if (jugador.colisionaCon(meta)) {
+                cambiarPantalla(new PantallaFin(juego, hud.getTiempo()));
+                musicaJuego.cerrar();
+            }
+        }
+//       else if(pausado){
 //            textoPausa.setPosition(
 //                (Config.getAnchoJuego() / 2) - (textoPausa.getAncho() / 2),
 //                (Config.getAltoJuego() / 2) + (textoPausa.getAlto() / 2)
@@ -151,28 +156,28 @@ public class PantallaJuego extends Pantalla {
 //            musicaJuego.pausar();
 //        }
 //
-//        jugador.dibujar();
-//        jugador2.dibujar();
-//
-//        b.end();
-//
-//        b.setProjectionMatrix(stage.getCamera().combined);
+        jugador.dibujar();
+        jugador2.dibujar();
+
+        b.end();
+
+        b.setProjectionMatrix(stage.getCamera().combined);
 //
 //        if (pausado) {
 //            dibujarPausa();
 //        }
 //
-//        b.begin();
-//
-//        hud.dibujar();
-//
-//        b.end();
-//
-//        stage.act(delta);
-//        stage.draw();
+        b.begin();
+
+        hud.dibujar();
+
+        b.end();
+
+        stage.act(delta);
+        stage.draw();
     }
 
-    private void dibujarPausa() {
+//    private void dibujarPausa() {
 
 //        Gdx.gl.glEnable(GL20.GL_BLEND);
 //
@@ -192,9 +197,9 @@ public class PantallaJuego extends Pantalla {
 //        pantallaPausa.end();
 //
 //        Gdx.gl.glDisable(GL20.GL_BLEND);
-    }
+//    }
 
-    private void cargarColisionesDesdeMapa() {
+//    private void cargarColisionesDesdeMapa() {
 //        if (mapa != null && mapa.getMapa() != null) {
 //            TiledMapTileLayer capa = (TiledMapTileLayer) mapa.getMapa().getLayers().get("Capa de patrones 1");
 //            if (capa != null) {
@@ -216,7 +221,7 @@ public class PantallaJuego extends Pantalla {
 //                }
 //            }
 //        }
-    }
+//    }
 
 
     @Override
@@ -242,4 +247,9 @@ public class PantallaJuego extends Pantalla {
 //        Render.musicaJuego = null;
 //        jugador.cerrar();
     }
+
+    public void asignarPosicionJugador (Jugador jugadorElegido, int[] posiciones){
+        jugadorElegido.asignarPosicionJugador(posiciones[0], posiciones[1]);
+    }
+
 }
