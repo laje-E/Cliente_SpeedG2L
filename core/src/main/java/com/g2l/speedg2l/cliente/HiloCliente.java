@@ -1,8 +1,6 @@
 package com.g2l.speedg2l.cliente;
 
-import com.g2l.speedg2l.entidades.Jugador;
 import com.g2l.speedg2l.entidades.Jugadores;
-import com.g2l.speedg2l.pantallas.PantallaJuego;
 
 import java.io.IOException;
 import java.net.*;
@@ -16,7 +14,7 @@ public class HiloCliente extends Thread{
     private DatagramSocket puertoCliente;
     private boolean fin = false;
 
-    private HashMap<Jugadores, int[]> posicionJugadores = new HashMap<>();
+    private HashMap<Jugadores, float[]> posicionJugadores = new HashMap<>();
 
     public HiloCliente(){
         try {
@@ -30,7 +28,7 @@ public class HiloCliente extends Thread{
     }
 
     private void inicializarHashMap() {
-        int[] arrayDeCeros = {0, 33};
+        float[] arrayDeCeros = {0, 33};
         for(int i=0; i<Jugadores.values().length; i++){
             posicionJugadores.put(Jugadores.values()[i], arrayDeCeros);
         }
@@ -72,13 +70,9 @@ public class HiloCliente extends Thread{
         String[] mensajePorPartes = mensaje.split("-");
         if (mensajePorPartes[0].equals("Movimiento")) {
             final int X=0, Y=1;
-            int[] posiciones = new int[2];
-            if (mensajePorPartes[1].equals("PosicionX")) {
-                posiciones[X] = Integer.parseInt(mensajePorPartes[2]);
-            }
-            else if (mensajePorPartes[1].equals("PosicionY")){
-                posiciones[Y] = Integer.parseInt(mensajePorPartes[2]);
-            }
+            float[] posiciones = new float[2];
+            posiciones[X] = Float.parseFloat(mensajePorPartes[1]);
+            posiciones[Y] = Float.parseFloat(mensajePorPartes[2]);
             if (mensajePorPartes[3].equals("JUGADOR_1")){
                 posicionJugadores.put(Jugadores.JUGADOR_1, posiciones);
             }
@@ -88,7 +82,7 @@ public class HiloCliente extends Thread{
         }
     }
 
-    public int[] getPosicionJugadores(Jugadores jugadorElegido) {
+    public float[] getPosicionJugadores(Jugadores jugadorElegido) {
         return posicionJugadores.get(jugadorElegido);
     }
 }

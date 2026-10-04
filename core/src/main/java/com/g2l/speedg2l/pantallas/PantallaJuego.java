@@ -90,6 +90,7 @@ public class PantallaJuego extends Pantalla {
         );
 
         hiloCliente = new HiloCliente();
+        hiloCliente.start();
     }
 
     private void crearYaplicarMusica() {
@@ -140,7 +141,6 @@ public class PantallaJuego extends Pantalla {
             jugador2.animar(delta);
 
             asignarPosicionJugador(jugador, hiloCliente.getPosicionJugadores(Jugadores.JUGADOR_1));
-
             hud.actualizar();
             if (jugador.colisionaCon(meta)) {
                 cambiarPantalla(new PantallaFin(juego, hud.getTiempo()));
@@ -248,8 +248,9 @@ public class PantallaJuego extends Pantalla {
 //        jugador.cerrar();
     }
 
-    public void asignarPosicionJugador (Jugador jugadorElegido, int[] posiciones){
-        jugadorElegido.asignarPosicionJugador(posiciones[0], posiciones[1]);
+    public void asignarPosicionJugador(Jugador jugadorElegido, float[] posiciones) {
+        if (posiciones != null) {
+            jugadorElegido.asignarPosicionJugador(posiciones[0], posiciones[1]);
+        }
     }
-
 }

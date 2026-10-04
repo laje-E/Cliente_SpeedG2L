@@ -33,9 +33,11 @@ public class Jugador extends Entidad{
         animacion.iniciar();
     }
 
-    public void asignarPosicionJugador (int posicionX, int posicionY) {
-        this.posicionX = (float) posicionX;
-        this.posicionY = (float) posicionY;
+    public void asignarPosicionJugador (float posicionX, float posicionY) {
+        this.posicionX = posicionX;
+        this.posicionY = posicionY;
+
+        actualizarHitbox();
     }
 
     public void animar(float delta) {
