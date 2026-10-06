@@ -64,9 +64,9 @@ public class HiloCliente extends Thread{
         if (mensaje.equals("OK")){
             direccionServer = dp.getAddress();
         }
-        if(mensaje.equals("Empezar")){
-
-        }
+//        if(mensaje.equals("Empezar")){
+//
+//        }
         String[] mensajePorPartes = mensaje.split("-");
         if (mensajePorPartes[0].equals("Movimiento")) {
             final int X=0, Y=1;
@@ -81,6 +81,65 @@ public class HiloCliente extends Thread{
             }
         }
     }
+
+//private void procesarMensaje(DatagramPacket dp) {
+//
+//    String mensaje = new String(dp.getData(), 0, dp.getLength()).trim();
+//
+//    System.out.println("[CLIENTE] Recibido: '" + mensaje + "'");
+//
+//    if (mensaje.equals("OK")) {
+//        direccionServer = dp.getAddress();
+//        return;
+//    }
+//
+//    if (mensaje.equals("Empezar")) {
+//        return;
+//    }
+//
+//    String[] mensajePorPartes = mensaje.split("-");
+//
+//    if (!mensajePorPartes[0].equals("Movimiento")) {
+//        return;
+//    }
+//
+//    if (mensajePorPartes.length != 4) {
+//        System.out.println("[CLIENTE] Paquete Movimiento inválido.");
+//        return;
+//    }
+//
+//    if (mensajePorPartes[1].isEmpty() || mensajePorPartes[2].isEmpty()) {
+//        System.out.println("[CLIENTE] Movimiento con posición vacía.");
+//        return;
+//    }
+//
+//    try {
+//        float[] posiciones = new float[2];
+//
+//        posiciones[0] = Float.parseFloat(mensajePorPartes[1]);
+//        posiciones[1] = Float.parseFloat(mensajePorPartes[2]);
+//
+//        if (mensajePorPartes[3].equals("JUGADOR_1")) {
+//            posicionJugadores.put(
+//                Jugadores.JUGADOR_1,
+//                posiciones
+//            );
+//        }
+//        else if (mensajePorPartes[3].equals("JUGADOR_2")) {
+//            posicionJugadores.put(
+//                Jugadores.JUGADOR_2,
+//                posiciones
+//            );
+//        }
+//
+//    } catch (NumberFormatException e) {
+//        System.out.println(
+//            "[CLIENTE] Posición inválida: '" +
+//                mensaje +
+//                "'"
+//        );
+//    }
+//}
 
     public float[] getPosicionJugadores(Jugadores jugadorElegido) {
         return posicionJugadores.get(jugadorElegido);
