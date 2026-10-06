@@ -144,4 +144,9 @@ public class HiloCliente extends Thread{
     public float[] getPosicionJugadores(Jugadores jugadorElegido) {
         return posicionJugadores.get(jugadorElegido);
     }
+
+
+    public void finalizarHilo(){
+        fin = true;
+    }
 }
