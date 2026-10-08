@@ -52,6 +52,8 @@ public class PantallaJuego extends Pantalla {
     private ShapeRenderer pantallaPausa = new ShapeRenderer();
     private Texto textoPausa = new Texto(Recursos.FUENTE_MENU, 60, Color.RED);
 
+    private Texto textoEspera = new Texto(Recursos.FUENTE_MENU, 60, Color.WHITE);
+
     private Meta meta;
 
     private HiloCliente hiloCliente;
@@ -79,6 +81,9 @@ public class PantallaJuego extends Pantalla {
         listaDeObstaculos = new ArrayList<>();
 
         textoPausa.setTexto("PAUSADO");
+
+        textoEspera.setTexto("Esperando jugador");
+        textoEspera.centrar();
 
 //        cargarColisionesDesdeMapa();
 
@@ -114,39 +119,50 @@ public class PantallaJuego extends Pantalla {
 
     @Override
     public void render(float delta) {
-        delta = Gdx.graphics.getDeltaTime();
 
-        Render.limpiarPantalla();
+        if(!hiloCliente.isEmpieza()){
+            b.begin();
 
-        camara.seguirJugador(jugador);
+            textoEspera.dibujar();
 
-        mapa.dibujar(camara.getCamara());
+            b.end();
+        }
 
-        b.setProjectionMatrix(camara.getCamara().combined);
-        b.begin();
 
-        if(entradas.escape()){
+        else {
+            delta = Gdx.graphics.getDeltaTime();
+
+            Render.limpiarPantalla();
+
+            camara.seguirJugador(jugador);
+
+            mapa.dibujar(camara.getCamara());
+
+            b.setProjectionMatrix(camara.getCamara().combined);
+            b.begin();
+
+            if (entradas.escape()) {
 //            pausado = !pausado;
-        }
+            }
 //
-        if(!pausado) {
-            if (!musicaJuego.estaReproduciendo()) {
-                musicaJuego.reproducir();
-            }
-            jugador.moverJugador(entradas, Jugadores.JUGADOR_1, hiloCliente);
+            if (!pausado) {
+                if (!musicaJuego.estaReproduciendo()) {
+                    musicaJuego.reproducir();
+                }
+                jugador.moverJugador(entradas, Jugadores.JUGADOR_1, hiloCliente);
 //          jugador.actualizarFisicas(listaDeEntidades, delta);
-            jugador.animar(delta);
-            jugador2.moverJugador(entradas, Jugadores.JUGADOR_2, hiloCliente);
+                jugador.animar(delta);
+                jugador2.moverJugador(entradas, Jugadores.JUGADOR_2, hiloCliente);
 //          jugador2.actualizarFisicas(listaDeEntidades, delta);
-            jugador2.animar(delta);
+                jugador2.animar(delta);
 
-            asignarPosicionJugador(jugador, hiloCliente.getPosicionJugadores(Jugadores.JUGADOR_1));
-            hud.actualizar();
-            if (jugador.colisionaCon(meta)) {
-                cambiarPantalla(new PantallaFin(juego, hud.getTiempo()));
-                musicaJuego.cerrar();
+                asignarPosicionJugador(jugador, hiloCliente.getPosicionJugadores(Jugadores.JUGADOR_1));
+                hud.actualizar();
+                if (jugador.colisionaCon(meta)) {
+                    cambiarPantalla(new PantallaFin(juego, hud.getTiempo()));
+                    musicaJuego.cerrar();
+                }
             }
-        }
 //       else if(pausado){
 //            textoPausa.setPosition(
 //                (Config.getAnchoJuego() / 2) - (textoPausa.getAncho() / 2),
@@ -156,25 +172,26 @@ public class PantallaJuego extends Pantalla {
 //            musicaJuego.pausar();
 //        }
 //
-        jugador.dibujar();
-        jugador2.dibujar();
+            jugador.dibujar();
+            jugador2.dibujar();
 
-        b.end();
+            b.end();
 
-        b.setProjectionMatrix(stage.getCamera().combined);
+            b.setProjectionMatrix(stage.getCamera().combined);
 //
 //        if (pausado) {
 //            dibujarPausa();
 //        }
 //
-        b.begin();
+            b.begin();
 
-        hud.dibujar();
+            hud.dibujar();
 
-        b.end();
+            b.end();
 
-        stage.act(delta);
-        stage.draw();
+            stage.act(delta);
+            stage.draw();
+        }
     }
 
 //    private void dibujarPausa() {

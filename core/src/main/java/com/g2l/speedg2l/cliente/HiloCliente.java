@@ -16,6 +16,8 @@ public class HiloCliente extends Thread{
 
     private HashMap<Jugadores, float[]> posicionJugadores = new HashMap<>();
 
+    private boolean empieza = false;
+
     public HiloCliente(){
         try {
             direccionServer = InetAddress.getByName("255.255.255.255");
@@ -50,7 +52,6 @@ public class HiloCliente extends Thread{
             byte [] data = new byte[1024];
             DatagramPacket dp = new DatagramPacket(data, data.length);
             try{
-                System.out.println("Mensaje: " + dp.toString());
                 puertoCliente.receive(dp);
             }catch (IOException event){
                 event.printStackTrace();
@@ -64,9 +65,9 @@ public class HiloCliente extends Thread{
         if (mensaje.equals("OK")){
             direccionServer = dp.getAddress();
         }
-//        if(mensaje.equals("Empezar")){
-//
-//        }
+        if(mensaje.equals("Empezar")){
+            empieza = true;
+        }
         String[] mensajePorPartes = mensaje.split("-");
         if (mensajePorPartes[0].equals("Movimiento")) {
             final int X=0, Y=1;
@@ -148,5 +149,9 @@ public class HiloCliente extends Thread{
 
     public void finalizarHilo(){
         fin = true;
+    }
+
+    public boolean isEmpieza() {
+        return empieza;
     }
 }
