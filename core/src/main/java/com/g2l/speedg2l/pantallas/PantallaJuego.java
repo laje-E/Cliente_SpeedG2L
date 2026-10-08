@@ -157,6 +157,7 @@ public class PantallaJuego extends Pantalla {
                 jugador2.animar(delta);
 
                 asignarPosicionJugador(jugador, hiloCliente.getPosicionJugadores(Jugadores.JUGADOR_1));
+                asignarPosicionJugador(jugador2, hiloCliente.getPosicionJugadores(Jugadores.JUGADOR_2));
                 hud.actualizar();
                 if (jugador.colisionaCon(meta)) {
                     cambiarPantalla(new PantallaFin(juego, hud.getTiempo()));
