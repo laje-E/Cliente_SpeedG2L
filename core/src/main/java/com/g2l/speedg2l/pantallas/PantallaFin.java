@@ -7,9 +7,11 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.g2l.speedg2l.cliente.HiloCliente;
 import com.g2l.speedg2l.componentes.Boton;
 import com.g2l.speedg2l.componentes.PanelBotones;
 import com.g2l.speedg2l.componentes.Texto;
+import com.g2l.speedg2l.cliente.PosicionFinal;
 import com.g2l.speedg2l.sonidos.EfectoSonido;
 import com.g2l.speedg2l.utilidades.Config;
 import com.g2l.speedg2l.utilidades.Recursos;
@@ -25,13 +27,28 @@ public class PantallaFin extends Pantalla {
     private Texto cronometro;
     private float tiempo;
 
-    public PantallaFin(Game juego, float tiempo) {
+    private PosicionFinal[] posiciones;
+    private Texto textoResultados;
+    private HiloCliente hiloCliente;
+
+    public PantallaFin(Game juego, PosicionFinal[] posiciones, HiloCliente hiloCliente) {
         super(juego);
-        this.tiempo = tiempo;
+        this.posiciones = posiciones;
+        this.hiloCliente = hiloCliente;
     }
 
     @Override
     public void show() {
+
+        posiciones = hiloCliente.getPosicionesFinales();
+
+        textoResultados = new Texto(
+            Recursos.FUENTE_MENU,
+            35,
+            Color.GREEN
+        );
+
+        actualizarResultados(posiciones);
 
         b = Render.batch;
         efectoMeta = new EfectoSonido(Recursos.EFECTO_META);
@@ -42,23 +59,50 @@ public class PantallaFin extends Pantalla {
             efectoMeta.reproducir();
         }
 
-        stage = new Stage(configViewport.getViewport());
-
-        cronometro = new Texto(Recursos.FUENTE_MENU, 60, Color.MAROON);
-
-        int minutos = (int) tiempo / 60;
-        int segundos = (int) tiempo % 60;
-        int centesimas = (int) (tiempo * 100) % 100;
-
-        cronometro.setTexto("Tiempo final:\n" + "min: " + minutos + " seg: " + segundos + "," + centesimas);
-
-        cronometro.centrarArriba(150);
+//        stage = new Stage(configViewport.getViewport());
+//
+//        cronometro = new Texto(Recursos.FUENTE_MENU, 60, Color.MAROON);
+//
+//        int minutos = (int) tiempo / 60;
+//        int segundos = (int) tiempo % 60;
+//        int centesimas = (int) (tiempo * 100) % 100;
+//
+//        cronometro.setTexto("Tiempo final:\n" + "min: " + minutos + " seg: " + segundos + "," + centesimas);
+//
+//        cronometro.centrarArriba(150);
 
         Skin skin = new Skin(Gdx.files.internal("skin/uiskin.json"));
 
         crearPanelBotones(skin);
         agregarAlStage();
         configurarInput(stage);
+    }
+
+    private void actualizarResultados(PosicionFinal[] nuevosResultados) {
+        this.posiciones = nuevosResultados;
+
+        String texto = "RESULTADOS\n\n";
+
+        for (int i = 0; i < posiciones.length; i++) {
+            PosicionFinal resultado = posiciones[i];
+
+            if (resultado == null) {
+                texto += (i+1) + "° puesto: En carrera\n";
+//                texto.append(i + 1)
+//                    .append("° puesto: En carrera\n");
+            } else {
+                texto += (resultado.getNumeroPosicion()) + "° puesto: Jugador " + (resultado.getIdJugador()) + " - " + (String.format("%.2f s", resultado.getTiempo())) + "\n";
+//                texto.append(resultado.getNumeroPosicion())
+//                    .append("° puesto: Jugador ")
+//                    .append(resultado.getIdJugador())
+//                    .append(" - ")
+//                    .append(String.format("%.2f s", resultado.getTiempo()))
+//                    .append("\n");
+            }
+        }
+
+        textoResultados.setTexto(texto);
+        textoResultados.centrar();
     }
 
     private void crearPanelBotones(Skin skin) {
@@ -94,7 +138,8 @@ public class PantallaFin extends Pantalla {
 
         configViewport.aplicarViewport(b);
         b.begin();
-        cronometro.dibujar();
+//        cronometro.dibujar();
+        textoResultados.dibujar();
 
         b.end();
         stage.act(delta);

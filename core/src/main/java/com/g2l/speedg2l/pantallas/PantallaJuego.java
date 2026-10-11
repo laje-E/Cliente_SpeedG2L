@@ -13,6 +13,7 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.g2l.speedg2l.cliente.HiloCliente;
+import com.g2l.speedg2l.cliente.PosicionFinal;
 import com.g2l.speedg2l.componentes.Imagen;
 import com.g2l.speedg2l.componentes.Texto;
 import com.g2l.speedg2l.componentes.interfaz.Hud;
@@ -57,6 +58,8 @@ public class PantallaJuego extends Pantalla {
     private Meta meta;
 
     private HiloCliente hiloCliente;
+
+    private PosicionFinal[] posicionesFinales = new PosicionFinal[2];
 
     protected PantallaJuego(Game juego) {
         super(juego);
@@ -120,6 +123,8 @@ public class PantallaJuego extends Pantalla {
     @Override
     public void render(float delta) {
 
+        posicionesFinales = hiloCliente.getPosicionesFinales();
+
         if(!hiloCliente.isEmpieza()){
             b.begin();
 
@@ -134,8 +139,12 @@ public class PantallaJuego extends Pantalla {
 
             Render.limpiarPantalla();
 
-            camara.seguirJugador(jugador);
-
+            if(hiloCliente.getNumeroJugador() == 1) {
+                camara.seguirJugador(jugador);
+            }
+            else if (hiloCliente.getNumeroJugador() == 2){
+                camara.seguirJugador(jugador2);
+            }
             mapa.dibujar(camara.getCamara());
 
             b.setProjectionMatrix(camara.getCamara().combined);
@@ -159,11 +168,12 @@ public class PantallaJuego extends Pantalla {
                 asignarPosicionJugador(jugador, hiloCliente.getPosicionJugadores(Jugadores.JUGADOR_1));
                 asignarPosicionJugador(jugador2, hiloCliente.getPosicionJugadores(Jugadores.JUGADOR_2));
                 hud.actualizar();
-                if (jugador.colisionaCon(meta)) {
-                    cambiarPantalla(new PantallaFin(juego, hud.getTiempo()));
+                if (hiloCliente.isEsteClienteTermino()) {
+                    cambiarPantalla(new PantallaFin(juego, posicionesFinales, hiloCliente));
                     musicaJuego.cerrar();
                 }
             }
+
 //       else if(pausado){
 //            textoPausa.setPosition(
 //                (Config.getAnchoJuego() / 2) - (textoPausa.getAncho() / 2),

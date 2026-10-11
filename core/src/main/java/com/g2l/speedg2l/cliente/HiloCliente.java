@@ -16,6 +16,11 @@ public class HiloCliente extends Thread{
 
     private HashMap<Jugadores, float[]> posicionJugadores = new HashMap<>();
 
+    private int numeroJugadorCliente;
+
+    private PosicionFinal[] posicionesFinales = new PosicionFinal[2];
+    private boolean esteClienteTermino = false;
+
     private boolean empieza = false;
 
     public HiloCliente(){
@@ -69,6 +74,14 @@ public class HiloCliente extends Thread{
             empieza = true;
         }
         String[] mensajePorPartes = mensaje.split("-");
+        if(mensajePorPartes[0].equals("NumeroJugador")){
+            if(mensajePorPartes[1].equals("JUGADOR_1")){
+                numeroJugadorCliente = 1;
+            }
+            else if(mensajePorPartes[1].equals("JUGADOR_2")){
+                numeroJugadorCliente = 2;
+            }
+        }
         if (mensajePorPartes[0].equals("Movimiento")) {
             final int X=0, Y=1;
             float[] posiciones = new float[2];
@@ -81,9 +94,30 @@ public class HiloCliente extends Thread{
                 posicionJugadores.put(Jugadores.JUGADOR_2, posiciones);
             }
         }
+
+        if(mensajePorPartes[0].equals("LLEGO")){
+            if(numeroJugadorCliente == Integer.parseInt(mensajePorPartes[1])){
+                esteClienteTermino = true;
+            }
+
+            int idJugador = Integer.parseInt(mensajePorPartes[1]);
+            int posicion = Integer.parseInt(mensajePorPartes[2]);
+            float tiempo = Float.parseFloat(mensajePorPartes[3]);
+                posicionesFinales[posicion - 1] =
+                    new PosicionFinal(tiempo, idJugador, posicion);
+        }
+
     }
 
-//private void procesarMensaje(DatagramPacket dp) {
+    public PosicionFinal[] getPosicionesFinales() {
+        return posicionesFinales;
+    }
+
+    public boolean isEsteClienteTermino() {
+        return esteClienteTermino;
+    }
+
+    //private void procesarMensaje(DatagramPacket dp) {
 //
 //    String mensaje = new String(dp.getData(), 0, dp.getLength()).trim();
 //
@@ -153,5 +187,9 @@ public class HiloCliente extends Thread{
 
     public boolean isEmpieza() {
         return empieza;
+    }
+
+    public int getNumeroJugador() {
+        return numeroJugadorCliente;
     }
 }
