@@ -171,6 +171,8 @@ public class PantallaJuego extends Pantalla {
 
             Render.limpiarPantalla();
 
+            panelBotones.getContenedor().setVisible(pausado);
+
             if(hiloCliente.getNumeroJugador() == 1) {
                 camara.seguirJugador(jugador);
             }
