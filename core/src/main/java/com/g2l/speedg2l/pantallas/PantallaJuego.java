@@ -11,10 +11,14 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.g2l.speedg2l.cliente.HiloCliente;
 import com.g2l.speedg2l.cliente.PosicionFinal;
+import com.g2l.speedg2l.componentes.Boton;
 import com.g2l.speedg2l.componentes.Imagen;
+import com.g2l.speedg2l.componentes.PanelBotones;
 import com.g2l.speedg2l.componentes.Texto;
 import com.g2l.speedg2l.componentes.interfaz.Hud;
 import com.g2l.speedg2l.entidades.*;
@@ -61,6 +65,8 @@ public class PantallaJuego extends Pantalla {
 
     private PosicionFinal[] posicionesFinales = new PosicionFinal[2];
 
+    private PanelBotones panelBotones;
+
     protected PantallaJuego(Game juego) {
         super(juego);
     }
@@ -87,8 +93,9 @@ public class PantallaJuego extends Pantalla {
 
         textoEspera.setTexto("Esperando jugador");
         textoEspera.centrar();
+        textoEspera.setY(80);
 
-//        cargarColisionesDesdeMapa();
+        Skin skin = new Skin(Gdx.files.internal("skin/uiskin.json"));
 
         stage = new Stage(
             new FitViewport(
@@ -97,8 +104,20 @@ public class PantallaJuego extends Pantalla {
             )
         );
 
+        crearPanelBotones(skin);
+        panelBotones.centrar();
+        agregarAlStage();
+
+        Gdx.input.setInputProcessor(stage);
+
+//        cargarColisionesDesdeMapa();
+
         hiloCliente = new HiloCliente();
         hiloCliente.start();
+    }
+
+    private void agregarAlStage() {
+        stage.addActor(panelBotones.getContenedor());
     }
 
     private void crearYaplicarMusica() {
@@ -125,12 +144,26 @@ public class PantallaJuego extends Pantalla {
 
         posicionesFinales = hiloCliente.getPosicionesFinales();
 
+        boolean estaPausado = !hiloCliente.isEmpieza();
+
+        panelBotones.getContenedor().setVisible(estaPausado);
+
         if(!hiloCliente.isEmpieza()){
+
+            Render.limpiarPantalla();
+
+            stage.getViewport().apply();
+            b.setProjectionMatrix(stage.getCamera().combined);
+
             b.begin();
 
             textoEspera.dibujar();
 
             b.end();
+
+            stage.act(delta);
+            stage.draw();
+
         }
 
 
@@ -255,6 +288,32 @@ public class PantallaJuego extends Pantalla {
 //        }
 //    }
 
+    private void crearPanelBotones(Skin skin) {
+        panelBotones = new PanelBotones();
+
+        final int PADDING = 10;
+        final int ANCHO_BOTONES = 200;
+        final int ALTURA_BOTONES = 60;
+
+        panelBotones.agregarBoton(
+            new Boton(
+                "Volver al menu",
+                skin,
+                new ClickListener() {
+                    @Override
+                    public void clicked(
+                        com.badlogic.gdx.scenes.scene2d.InputEvent event,
+                        float x,
+                        float y) {
+                        cambiarPantalla(new PantallaMenu(juego));
+                    }
+                },
+                ANCHO_BOTONES,
+                ALTURA_BOTONES
+            ),
+            PADDING
+        );
+    }
 
     @Override
     public void pause() {
