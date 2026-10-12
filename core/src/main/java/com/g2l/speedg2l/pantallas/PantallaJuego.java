@@ -168,6 +168,10 @@ public class PantallaJuego extends Pantalla {
                 asignarPosicionJugador(jugador, hiloCliente.getPosicionJugadores(Jugadores.JUGADOR_1));
                 asignarPosicionJugador(jugador2, hiloCliente.getPosicionJugadores(Jugadores.JUGADOR_2));
                 hud.actualizar();
+//                if (hiloCliente.isEsteClienteTermino()) {
+//                    cambiarPantalla(new PantallaFin(juego, posicionesFinales, hiloCliente));
+//                    musicaJuego.cerrar();
+//                }
                 if (hiloCliente.isEsteClienteTermino()) {
                     cambiarPantalla(new PantallaFin(juego, posicionesFinales, hiloCliente));
                     musicaJuego.cerrar();

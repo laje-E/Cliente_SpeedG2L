@@ -20,6 +20,7 @@ public class HiloCliente extends Thread{
 
     private PosicionFinal[] posicionesFinales = new PosicionFinal[2];
     private boolean esteClienteTermino = false;
+    private boolean todosTerminaron = false;
 
     private boolean empieza = false;
 
@@ -103,8 +104,12 @@ public class HiloCliente extends Thread{
             int idJugador = Integer.parseInt(mensajePorPartes[1]);
             int posicion = Integer.parseInt(mensajePorPartes[2]);
             float tiempo = Float.parseFloat(mensajePorPartes[3]);
-                posicionesFinales[posicion - 1] =
-                    new PosicionFinal(tiempo, idJugador, posicion);
+            posicionesFinales[posicion - 1] =
+                new PosicionFinal(tiempo, idJugador, posicion);
+
+            if(posicion == 2){
+                todosTerminaron = true;
+            }
         }
 
     }
@@ -115,6 +120,10 @@ public class HiloCliente extends Thread{
 
     public boolean isEsteClienteTermino() {
         return esteClienteTermino;
+    }
+
+    public boolean isTodosTerminaron() {
+        return todosTerminaron;
     }
 
     //private void procesarMensaje(DatagramPacket dp) {

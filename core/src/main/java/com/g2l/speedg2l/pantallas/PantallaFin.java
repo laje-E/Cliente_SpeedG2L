@@ -48,8 +48,6 @@ public class PantallaFin extends Pantalla {
             Color.GREEN
         );
 
-        actualizarResultados(posiciones);
-
         b = Render.batch;
 
         stage = new Stage(configViewport.getViewport());
@@ -138,8 +136,11 @@ public class PantallaFin extends Pantalla {
     public void render(float delta) {
         Render.limpiarPantalla();
 
+        actualizarResultados(posiciones);
+
         configViewport.aplicarViewport(b);
         b.begin();
+
 //        cronometro.dibujar();
         textoResultados.dibujar();
 
