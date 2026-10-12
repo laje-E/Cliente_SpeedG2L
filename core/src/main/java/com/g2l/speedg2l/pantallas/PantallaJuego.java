@@ -144,11 +144,10 @@ public class PantallaJuego extends Pantalla {
 
         posicionesFinales = hiloCliente.getPosicionesFinales();
 
-        boolean estaPausado = !hiloCliente.isEmpieza();
-
-        panelBotones.getContenedor().setVisible(estaPausado);
 
         if(!hiloCliente.isEmpieza()){
+
+            panelBotones.getContenedor().setVisible(!hiloCliente.isEmpieza());
 
             Render.limpiarPantalla();
 
@@ -306,6 +305,7 @@ public class PantallaJuego extends Pantalla {
                         float x,
                         float y) {
                         cambiarPantalla(new PantallaMenu(juego));
+                        hiloCliente.enviarMensaje("SeSalioDelJuego-" + hiloCliente.getNumeroJugador());
                     }
                 },
                 ANCHO_BOTONES,
