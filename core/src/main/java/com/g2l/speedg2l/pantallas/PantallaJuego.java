@@ -185,10 +185,10 @@ public class PantallaJuego extends Pantalla {
             b.begin();
 
             if (entradas.escape()) {
-//            pausado = !pausado;
+                pausado = !pausado;
             }
 //
-            if (!pausado) {
+//            if (!pausado) {
                 if (!musicaJuego.estaReproduciendo()) {
                     musicaJuego.reproducir();
                 }
@@ -210,16 +210,19 @@ public class PantallaJuego extends Pantalla {
                     cambiarPantalla(new PantallaFin(juego, posicionesFinales, hiloCliente));
                     musicaJuego.cerrar();
                 }
-            }
+//            }
 
-//       else if(pausado){
-//            textoPausa.setPosition(
-//                (Config.getAnchoJuego() / 2) - (textoPausa.getAncho() / 2),
-//                (Config.getAltoJuego() / 2) + (textoPausa.getAlto() / 2)
-//            );
+//       if(pausado) {
+////           textoPausa.setPosition(
+////               (Config.getAnchoJuego() / 2) - (textoPausa.getAncho() / 2),
+////               (Config.getAltoJuego() / 2) + (textoPausa.getAlto() / 2)
+////           );
+//           textoPausa.centrarArriba(150);
+//           textoPausa.dibujar();
+//       }
 //
 //            musicaJuego.pausar();
-//        }
+//
 //
             jugador.dibujar();
             jugador2.dibujar();
@@ -228,9 +231,17 @@ public class PantallaJuego extends Pantalla {
 
             b.setProjectionMatrix(stage.getCamera().combined);
 //
-//        if (pausado) {
-//            dibujarPausa();
-//        }
+            if (pausado) {
+
+                b.begin();
+
+                textoPausa.centrarArriba(200);
+                textoPausa.dibujar();
+
+                b.end();
+
+                dibujarPausa();
+            }
 //
             b.begin();
 
@@ -243,27 +254,27 @@ public class PantallaJuego extends Pantalla {
         }
     }
 
-//    private void dibujarPausa() {
+    private void dibujarPausa() {
 
-//        Gdx.gl.glEnable(GL20.GL_BLEND);
-//
-//        pantallaPausa.setProjectionMatrix(stage.getCamera().combined);
-//
-//        pantallaPausa.begin(ShapeRenderer.ShapeType.Filled);
-//
-//        pantallaPausa.setColor(0, 0, 0, 0.7f);
-//
-//        pantallaPausa.rect(
-//            0,
-//            0,
-//            Config.getAnchoJuego(),
-//            Config.getAltoJuego()
-//        );
-//
-//        pantallaPausa.end();
-//
-//        Gdx.gl.glDisable(GL20.GL_BLEND);
-//    }
+        Gdx.gl.glEnable(GL20.GL_BLEND);
+
+        pantallaPausa.setProjectionMatrix(stage.getCamera().combined);
+
+        pantallaPausa.begin(ShapeRenderer.ShapeType.Filled);
+
+        pantallaPausa.setColor(0, 0, 0, 0.7f);
+
+        pantallaPausa.rect(
+            0,
+            0,
+            Config.getAnchoJuego(),
+            Config.getAltoJuego()
+        );
+
+        pantallaPausa.end();
+
+        Gdx.gl.glDisable(GL20.GL_BLEND);
+    }
 
 //    private void cargarColisionesDesdeMapa() {
 //        if (mapa != null && mapa.getMapa() != null) {
