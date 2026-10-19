@@ -37,6 +37,7 @@ public class SpeedG2L extends Game {
 
     @Override
     public void dispose() {
+        super.dispose();
         b.dispose();
     }
 }
