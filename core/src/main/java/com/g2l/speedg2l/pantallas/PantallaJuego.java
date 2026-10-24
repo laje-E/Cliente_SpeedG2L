@@ -67,6 +67,10 @@ public class PantallaJuego extends Pantalla {
 
     private PanelBotones panelBotones;
 
+    private long ultimoMensajeEnviado = 0;
+    private Texto textoDesconexion = new Texto(Recursos.FUENTE_MENU, 48, Color.RED);
+
+
     protected PantallaJuego(Game juego) {
         super(juego);
     }
@@ -112,9 +116,16 @@ public class PantallaJuego extends Pantalla {
 
 //        cargarColisionesDesdeMapa();
 
+        textoDesconexion.setTexto("SERVIDOR DESCONECTADO");
+        textoDesconexion.centrar();
+        textoDesconexion.setY(80);
+
+
         hiloCliente = new HiloCliente();
         hiloCliente.start();
         hiloCliente.enviarMensaje("Conexion");
+
+
     }
 
     private void agregarAlStage() {
@@ -143,10 +154,35 @@ public class PantallaJuego extends Pantalla {
     @Override
     public void render(float delta) {
 
+        long ahora = System.currentTimeMillis();
+
+
+        if (ahora - ultimoMensajeEnviado >= 1000) {
+            hiloCliente.enviarMensaje("Hola");
+            ultimoMensajeEnviado = ahora;
+        }
+
         posicionesFinales = hiloCliente.getPosicionesFinales();
 
+        if (hiloCliente.isServidorDesconectado()) {
+            Render.limpiarPantalla();
 
-        if(!hiloCliente.isEmpieza()){
+            panelBotones.getContenedor().setVisible(true);
+
+            stage.getViewport().apply();
+            b.setProjectionMatrix(stage.getCamera().combined);
+
+            b.begin();
+            textoDesconexion.dibujar();
+            b.end();
+
+            stage.act(delta);
+            stage.draw();
+
+            return;
+        }
+
+        else if(!hiloCliente.isEmpieza()){
 
             panelBotones.getContenedor().setVisible(!hiloCliente.isEmpieza());
 
@@ -167,7 +203,7 @@ public class PantallaJuego extends Pantalla {
         }
 
 
-        else {
+        else if (hiloCliente.isEmpieza()){
             delta = Gdx.graphics.getDeltaTime();
 
             Render.limpiarPantalla();

@@ -24,10 +24,18 @@ public class HiloCliente extends Thread{
 
     private boolean empieza = false;
 
+    private boolean servidorConfirmado = false;
+    private boolean servidorDesconectado = false;
+
+    private long ultimoMensaje = 0;
+
+    private final long TIEMPO_MAXIMO_SIN_RESPUESTA = 5000;
+
     public HiloCliente(){
         try {
             direccionServer = InetAddress.getByName("255.255.255.255");
             puertoCliente = new DatagramSocket();
+            puertoCliente.setSoTimeout(1000);
             inicializarHashMap();
         }catch (SocketException | UnknownHostException evento){
             evento.printStackTrace();
@@ -69,6 +77,32 @@ public class HiloCliente extends Thread{
 
             try{
                 puertoCliente.receive(dp);
+
+                // Llegó algo del servidor: actualizamos el último contacto
+                ultimoMensaje = System.currentTimeMillis();
+                procesarMensaje(dp);
+
+            }catch (SocketTimeoutException timeout) {
+
+                // El tiempo de espera no debe finalizar el hilo.
+                if (servidorConfirmado && !servidorDesconectado) {
+                    long ahora = System.currentTimeMillis();
+
+                    if (ahora - ultimoMensaje >= TIEMPO_MAXIMO_SIN_RESPUESTA) {
+                        servidorDesconectado = true;
+
+                        System.out.println(
+                            "El servidor se desconectó."
+                        );
+                    }
+                }
+
+            }catch (SocketException exception) {
+                // Cerrar el socket del cliente es una finalización normal.
+                if (!puertoCliente.isClosed()){
+                    exception.printStackTrace();
+                }
+
             }catch (IOException event) {
                 if(puertoCliente.isClosed()) {
                     break;
@@ -81,7 +115,21 @@ public class HiloCliente extends Thread{
                 break;
             }
 
-            procesarMensaje(dp);
+            if (servidorConfirmado && !servidorDesconectado) {
+                long tiempoSinRespuesta =
+                    System.currentTimeMillis() - ultimoMensaje;
+
+                if (tiempoSinRespuesta >
+                    TIEMPO_MAXIMO_SIN_RESPUESTA) {
+
+                    servidorDesconectado = true;
+
+                    System.out.println(
+                        "El servidor dejó de responder."
+                    );
+                }
+            }
+
         }
 
         System.out.println("HiloCliente terminado.");
@@ -89,6 +137,10 @@ public class HiloCliente extends Thread{
 
     private void procesarMensaje(DatagramPacket dp){
         String mensaje = (new String (dp.getData())).trim();
+        if (mensaje.equals("Hola")) {
+            servidorConfirmado = true;
+            enviarMensaje("Hola");
+        }
         if (mensaje.equals("OK")){
             direccionServer = dp.getAddress();
         }
@@ -225,5 +277,9 @@ public class HiloCliente extends Thread{
 
     public int getNumeroJugador() {
         return numeroJugadorCliente;
+    }
+
+    public boolean isServidorDesconectado() {
+        return servidorDesconectado;
     }
 }
