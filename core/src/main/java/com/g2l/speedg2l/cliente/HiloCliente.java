@@ -42,27 +42,49 @@ public class HiloCliente extends Thread{
     }
 
     public void enviarMensaje(String mensaje){
-        byte[] data = mensaje.getBytes();
-        DatagramPacket dp = new DatagramPacket(data, data.length, direccionServer, puertoServer);
-        try {
-            puertoCliente.send(dp);
-        }catch (IOException event){
-            event.printStackTrace();
+        if(puertoCliente == null || puertoCliente.isClosed()){
+            System.err.println("Error, cliente no disponible para enviar mensajes.");
+        }else{
+            byte[] data = mensaje.getBytes();
+            DatagramPacket dp = new DatagramPacket(data, data.length, direccionServer, puertoServer);
+            try {
+                puertoCliente.send(dp);
+            }catch (IOException event){
+                event.printStackTrace();
+            }
         }
     }
 
     @Override
-    public void run() {
-        do{
-            byte [] data = new byte[1024];
+    public void run(){
+        if(puertoCliente == null){
+            System.err.println("El socket del cliente no está disponible.");
+            return;
+        }
+
+        while(!puertoCliente.isClosed()) {
+
+            byte[] data = new byte[1024];
             DatagramPacket dp = new DatagramPacket(data, data.length);
+
             try{
                 puertoCliente.receive(dp);
-            }catch (IOException event){
+            }catch (IOException event) {
+                if(puertoCliente.isClosed()) {
+                    break;
+                }
                 event.printStackTrace();
+                break;
             }
+
+            if(puertoCliente.isClosed()) {
+                break;
+            }
+
             procesarMensaje(dp);
-        }while(!fin);
+        }
+
+        System.out.println("HiloCliente terminado.");
     }
 
     private void procesarMensaje(DatagramPacket dp){
@@ -189,10 +211,14 @@ public class HiloCliente extends Thread{
     }
 
 
-    public void finalizarHilo(){
-        fin = true;
+    public void finalizarHilo() {
+        if (puertoCliente != null) {
+            puertoCliente.close();
+            fin=true;
+        }else{
+            System.out.println("Flaco, no se cierra.");
+        }
     }
-
     public boolean isEmpieza() {
         return empieza;
     }

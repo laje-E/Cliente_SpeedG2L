@@ -341,7 +341,9 @@ public class PantallaJuego extends Pantalla {
 
     @Override
     public void hide() {
-
+        if (hiloCliente != null) {
+            hiloCliente.finalizarHilo();
+        }
     }
 
     @Override
