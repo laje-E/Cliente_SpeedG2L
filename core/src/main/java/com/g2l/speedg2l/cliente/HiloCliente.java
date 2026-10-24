@@ -143,6 +143,8 @@ public class HiloCliente extends Thread{
         }
         if (mensaje.equals("OK")){
             direccionServer = dp.getAddress();
+            servidorConfirmado = true;
+            servidorDesconectado = false;
         }
         if(mensaje.equals("Empezar")){
             empieza = true;
@@ -281,5 +283,9 @@ public class HiloCliente extends Thread{
 
     public boolean isServidorDesconectado() {
         return servidorDesconectado;
+    }
+
+    public boolean isServidorConfirmado() {
+        return servidorConfirmado;
     }
 }

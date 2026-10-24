@@ -70,6 +70,11 @@ public class PantallaJuego extends Pantalla {
     private long ultimoMensajeEnviado = 0;
     private Texto textoDesconexion = new Texto(Recursos.FUENTE_MENU, 48, Color.RED);
 
+    private long inicioIntentoConexion = 0;
+    private final long TIEMPO_ESPERA_SERVIDOR = 5000;
+    private final long INTERVALO_REINTENTO = 1000;
+    private boolean servidorNoEncontrado = false;
+    private Texto textoServidorNoEncontrado = new Texto(Recursos.FUENTE_MENU, 48, Color.RED);
 
     protected PantallaJuego(Game juego) {
         super(juego);
@@ -120,9 +125,18 @@ public class PantallaJuego extends Pantalla {
         textoDesconexion.centrar();
         textoDesconexion.setY(80);
 
+        textoServidorNoEncontrado.setTexto(
+            "NO HAY NINGUN SERVIDOR CONECTADO"
+        );
+        textoServidorNoEncontrado.centrar();
+        textoServidorNoEncontrado.setY(80);
+
 
         hiloCliente = new HiloCliente();
         hiloCliente.start();
+
+        inicioIntentoConexion = System.currentTimeMillis();
+        ultimoMensajeEnviado = inicioIntentoConexion;
         hiloCliente.enviarMensaje("Conexion");
 
 
@@ -155,6 +169,75 @@ public class PantallaJuego extends Pantalla {
     public void render(float delta) {
 
         long ahora = System.currentTimeMillis();
+        // 1. Todavía no recibimos una respuesta del servidor.
+        if (!hiloCliente.isServidorConfirmado()
+            && !servidorNoEncontrado) {
+
+            // Reintentar la conexión cada segundo.
+            if (ahora - ultimoMensajeEnviado >= INTERVALO_REINTENTO) {
+                hiloCliente.enviarMensaje("Conexion");
+                ultimoMensajeEnviado = ahora;
+            }
+
+            // Comprobar si pasaron los 5 segundos.
+            if (ahora - inicioIntentoConexion >= TIEMPO_ESPERA_SERVIDOR
+                && !hiloCliente.isServidorConfirmado()) {
+
+                servidorNoEncontrado = true;
+
+                System.out.println(
+                    "No se encontró ningún servidor después de 5 segundos."
+                );
+            }
+        }
+
+        // 2. Ya hay conexión: enviar mensajes de comprobación.
+        if (hiloCliente.isServidorConfirmado()
+            && !hiloCliente.isServidorDesconectado()
+            && ahora - ultimoMensajeEnviado >= 1000) {
+
+            hiloCliente.enviarMensaje("Hola");
+            ultimoMensajeEnviado = ahora;
+        }
+
+        // 3. Mostrar el mensaje si no se encontró el servidor.
+        if (servidorNoEncontrado) {
+            Render.limpiarPantalla();
+
+            panelBotones.getContenedor().setVisible(true);
+
+            stage.getViewport().apply();
+            b.setProjectionMatrix(stage.getCamera().combined);
+
+            b.begin();
+            textoServidorNoEncontrado.dibujar();
+            b.end();
+
+            stage.act(delta);
+            stage.draw();
+
+            return;
+        }
+
+        // 4. Comportamiento de desconexión.
+        if (hiloCliente.isServidorDesconectado()) {
+            Render.limpiarPantalla();
+
+            panelBotones.getContenedor().setVisible(true);
+
+            stage.getViewport().apply();
+            b.setProjectionMatrix(stage.getCamera().combined);
+
+            b.begin();
+            textoDesconexion.dibujar();
+            b.end();
+
+            stage.act(delta);
+            stage.draw();
+
+            return;
+        }
+
 
 
         if (ahora - ultimoMensajeEnviado >= 1000) {
