@@ -114,6 +114,7 @@ public class PantallaJuego extends Pantalla {
 
         hiloCliente = new HiloCliente();
         hiloCliente.start();
+        hiloCliente.enviarMensaje("Conexion");
     }
 
     private void agregarAlStage() {

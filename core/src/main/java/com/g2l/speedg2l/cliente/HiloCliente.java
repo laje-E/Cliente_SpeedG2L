@@ -29,7 +29,6 @@ public class HiloCliente extends Thread{
             direccionServer = InetAddress.getByName("255.255.255.255");
             puertoCliente = new DatagramSocket();
             inicializarHashMap();
-            enviarMensaje("Conexion");
         }catch (SocketException | UnknownHostException evento){
             evento.printStackTrace();
         }
