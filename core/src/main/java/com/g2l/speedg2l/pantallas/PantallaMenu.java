@@ -23,6 +23,7 @@ public class PantallaMenu extends Pantalla{
     private SpriteBatch b;
     private Texto texto;
 
+
     public PantallaMenu(Game juego) {
         super(juego);
     }
@@ -35,6 +36,7 @@ public class PantallaMenu extends Pantalla{
         texto = new Texto(Recursos.FUENTE_MENU, 60, Color.RED);
         texto.setTexto("SpeedG2L");
         texto.centrarArriba(100);
+
 
         stage = new Stage(configViewport.getViewport());
 
@@ -56,6 +58,7 @@ public class PantallaMenu extends Pantalla{
         b.begin();
         imagenFondo.dibujar();
         texto.dibujar();
+
         b.end();
         stage.act(delta);
         stage.draw();

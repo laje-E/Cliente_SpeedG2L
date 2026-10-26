@@ -4,6 +4,7 @@ Todos los cambios importantes de este proyecto serán documentados en este archi
 
 El formato de este archivo está basado en Keep a Changelog.
 
+<<<<<<< HEAD
 ## [0.19.0] - 2026-09-04
 
 ## Agregado
@@ -193,18 +194,23 @@ El formato de este archivo está basado en Keep a Changelog.
 - Se agrego la version inicial del sistema de colisiones en la clase "Jugador"
 - Se actualizo la version del sistema de colisiones
 
+=======
+>>>>>>> repositorio_original_SpeedG2L/nacho
 
 ## [0.4.0] - 2026-07-21
 
 ### Agregado
 
 - Se incorporo la clase "SpeedG2L" al programa
+<<<<<<< HEAD
 - Se incorporo la clase del juego "SpeedG2L" al programa
 - Se creo e incorporo la funcionalidad inicial de movimiento a la clase "Jugador"
 
 ## Modificado
 - Se reemplazo la clase "Main" por la clase "SpeedG2L"
 
+=======
+>>>>>>> repositorio_original_SpeedG2L/nacho
 
 ## [0.3.0] - 2026-07-15
 

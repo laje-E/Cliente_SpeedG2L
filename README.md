@@ -6,7 +6,11 @@ Desarrollaremos un videojuego (en Java 21 LTS,  framework LibGDX en la versión 
 - Java 21 LTS.
 - Framework LibGDX.
 - Git y GitHub para el control de versiones.
+<<<<<<< HEAD
 - Herramienta para creación de mapas: Tiled.
+=======
+- Herramienta para creación de mapas: pendiente de investigación y selección.
+>>>>>>> repositorio_original_SpeedG2L/nacho
 
 
 ### Plataforma objetivo:
@@ -55,10 +59,14 @@ También es posible abrir el proyecto desde IntelliJ IDEA o Eclipse como un proy
 
 
 ## Estado Actual del Proyecto:
+<<<<<<< HEAD
 Prototipo inicial para la segunda pre-entrega
 
 ## Video demostrativo del prototipo:
 [Ve el video aquí](https://youtu.be/YKhzqS2rFUY)
+=======
+Configuración inicial y estructura del proyecto.
+>>>>>>> repositorio_original_SpeedG2L/nacho
 
 ## Wiki del Proyecto:
 [Ver la Propuesta completa del Proyecto aquí](https://github.com/Julinza2007/SpeedG2L/wiki/Propuesta-del-Proyecto-%E2%80%90-SpeedG2L)

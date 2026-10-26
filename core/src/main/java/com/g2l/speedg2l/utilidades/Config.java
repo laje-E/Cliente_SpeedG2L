@@ -1,3 +1,4 @@
+
 package com.g2l.speedg2l.utilidades;
 
 import com.badlogic.gdx.Gdx;
@@ -8,6 +9,8 @@ public class Config {
     private static final int ALTO_JUEGO = 720;
 
     private static float volumenMaster = 0.1f;
+    private static float volumenMusica = 0.1f;
+
     private static boolean sonidoSilenciado = false;
 
     private Config() {}
@@ -41,15 +44,19 @@ public class Config {
     }
 
     public static void setVolumenMaster(float volumen) {
-        if (volumen < 0.0f) {
-            volumen = 0.0f;
-        }
+        volumenMaster = limitarVolumen(volumen);
+    }
 
-        if (volumen > 1.0f) {
-            volumen = 1.0f;
-        }
+    public static float getVolumenMusica() {
+        return volumenMusica;
+    }
 
-        volumenMaster = volumen;
+    public static void setVolumenMusica(float volumen) {
+        volumenMusica = limitarVolumen(volumen);
+    }
+
+    private static float limitarVolumen(float volumen) {
+        return Math.max(0.0f, Math.min(1.0f, volumen));
     }
 
     public static boolean isSonidoSilenciado() {

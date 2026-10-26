@@ -27,17 +27,17 @@ public class Jugador extends Entidad{
     private AnimacionEntidad animacion;
     boolean saltando = false;
 
-    public Jugador(float ancho , float alto, float posicionX, float posicionY){
-        super(ancho, alto, posicionX, posicionY);
-        animacion = new AnimacionEntidad("soldado_corriendo.png", 0.09f, 4, 3);
-        animacion.iniciar();
-    }
-
     public void asignarPosicionJugador (float posicionX, float posicionY) {
         this.posicionX = posicionX;
         this.posicionY = posicionY;
 
         actualizarHitbox();
+    }
+
+    public Jugador(float ancho , float alto, float posicionX, float posicionY, String ruta){
+        super(ancho, alto, posicionX, posicionY);
+        animacion = new AnimacionEntidad(ruta, 0.09f, 4, 3);
+        animacion.iniciar();
     }
 
     public void animar(float delta) {
@@ -83,6 +83,7 @@ public class Jugador extends Entidad{
                     hiloCliente.enviarMensaje("Aprete-Arriba");
 //                    velocidadYMenosGravedad = VELOCIDAD_Y;
 //                    this.saltando = true;
+
                 }
 
                 break;
@@ -351,8 +352,20 @@ public class Jugador extends Entidad{
 //        }
 //    }
 
+
     public boolean colisionaCon(Entidad entidad) {
         return getHitbox().overlaps(entidad.getHitbox());
     }
 
+//
+//    public void aplicarEfectoLava() {
+//        tiempoRalentizacion = DURACION_RALENTIZACION;
+//
+//        if (tiempoEfectoLava > 0) {
+//            return;
+//        }
+//        velocidadYMenosGravedad = REBOTE_LAVA;
+//        saltando = true;
+//        tiempoEfectoLava = DURACION_EFECTO_LAVA;
+//    }
 }

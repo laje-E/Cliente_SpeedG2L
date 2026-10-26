@@ -24,7 +24,8 @@ public class Hud implements Cerrable {
 
     public void dibujar() {
         crearCronometro();
-        cronometro.setPosition(((Config.getAnchoJuego() / 2) - (cronometro.getAncho() / 2)), ((Config.getAltoJuego()) - (cronometro.getAlto() / 2)));        cronometro.dibujar();
+        cronometro.setPosition(((Config.getAnchoJuego() / 2) - (cronometro.getAncho() / 2)), ((Config.getAltoJuego()) - (cronometro.getAlto() / 2)));
+        cronometro.dibujar();
     }
 
     private void crearCronometro(){
@@ -48,4 +49,5 @@ public class Hud implements Cerrable {
     public float getTiempo() {
         return tiempo;
     }
+
 }

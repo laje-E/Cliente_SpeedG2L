@@ -1,3 +1,4 @@
+
 package com.g2l.speedg2l.utilidades;
 
 import com.badlogic.gdx.graphics.OrthographicCamera;
