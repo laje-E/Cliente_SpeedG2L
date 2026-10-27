@@ -302,9 +302,6 @@ public class PantallaJuego extends Pantalla {
 
             panelBotones.getContenedor().setVisible(pausado);
 
-            asignarPosicionJugador(jugador, hiloCliente.getPosicionJugadores(Jugadores.JUGADOR_1));
-            asignarPosicionJugador(jugador2, hiloCliente.getPosicionJugadores(Jugadores.JUGADOR_2));
-
             if(hiloCliente.getNumeroJugador() == 1) {
                 camara.seguirJugador(jugador);
             }
@@ -325,11 +322,19 @@ public class PantallaJuego extends Pantalla {
                     musicaJuego.reproducir();
                 }
                 jugador.moverJugador(entradas, Jugadores.JUGADOR_1, hiloCliente);
+//          jugador.actualizarFisicas(listaDeEntidades, delta);
                 jugador.animar(delta);
                 jugador2.moverJugador(entradas, Jugadores.JUGADOR_2, hiloCliente);
+//          jugador2.actualizarFisicas(listaDeEntidades, delta);
                 jugador2.animar(delta);
-                hud.actualizar();
 
+                asignarPosicionJugador(jugador, hiloCliente.getPosicionJugadores(Jugadores.JUGADOR_1));
+                asignarPosicionJugador(jugador2, hiloCliente.getPosicionJugadores(Jugadores.JUGADOR_2));
+                hud.actualizar();
+//                if (hiloCliente.isEsteClienteTermino()) {
+//                    cambiarPantalla(new PantallaFin(juego, posicionesFinales, hiloCliente));
+//                    musicaJuego.cerrar();
+//                }
                 if (hiloCliente.isEsteClienteTermino()) {
                     conservarHilo = true;
                     cambiarPantalla(new PantallaFin(juego, posicionesFinales, hiloCliente));
