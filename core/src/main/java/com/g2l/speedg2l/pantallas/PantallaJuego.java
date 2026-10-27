@@ -78,6 +78,8 @@ public class PantallaJuego extends Pantalla {
     private boolean servidorNoEncontrado = false;
     private Texto textoServidorNoEncontrado = new Texto(Recursos.FUENTE_MENU, 48, Color.RED);
 
+    private boolean conservarHilo = false;
+
     protected PantallaJuego(Game juego) {
         super(juego);
     }
@@ -334,6 +336,7 @@ public class PantallaJuego extends Pantalla {
 //                    musicaJuego.cerrar();
 //                }
                 if (hiloCliente.isEsteClienteTermino()) {
+                    conservarHilo = true;
                     cambiarPantalla(new PantallaFin(juego, posicionesFinales, hiloCliente));
                     musicaJuego.cerrar();
                 }
@@ -478,7 +481,7 @@ public class PantallaJuego extends Pantalla {
 
     @Override
     public void hide() {
-        if (hiloCliente != null) {
+        if (hiloCliente != null && !conservarHilo) {
             hiloCliente.finalizarHilo();
         }
     }

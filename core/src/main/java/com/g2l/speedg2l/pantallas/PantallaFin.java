@@ -136,6 +136,8 @@ public class PantallaFin extends Pantalla {
     public void render(float delta) {
         Render.limpiarPantalla();
 
+        posiciones = hiloCliente.getPosicionesFinales();
+
         actualizarResultados(posiciones);
 
         configViewport.aplicarViewport(b);
@@ -161,7 +163,9 @@ public class PantallaFin extends Pantalla {
 
     @Override
     public void hide() {
-
+        if (hiloCliente != null) {
+            hiloCliente.finalizarHilo();
+        }
     }
 
 
