@@ -246,8 +246,6 @@ public class PantallaJuego extends Pantalla {
             return;
         }
 
-
-
         if (ahora - ultimoMensajeEnviado >= 1000) {
             hiloCliente.enviarMensaje("Hola");
             ultimoMensajeEnviado = ahora;
@@ -302,6 +300,9 @@ public class PantallaJuego extends Pantalla {
 
             panelBotones.getContenedor().setVisible(pausado);
 
+
+            asignarPosicionJugador(jugador, hiloCliente.getPosicionJugadores(Jugadores.JUGADOR_1));
+            asignarPosicionJugador(jugador2, hiloCliente.getPosicionJugadores(Jugadores.JUGADOR_2));
             if(hiloCliente.getNumeroJugador() == 1) {
                 camara.seguirJugador(jugador);
             }
@@ -328,8 +329,6 @@ public class PantallaJuego extends Pantalla {
 //          jugador2.actualizarFisicas(listaDeEntidades, delta);
                 jugador2.animar(delta);
 
-                asignarPosicionJugador(jugador, hiloCliente.getPosicionJugadores(Jugadores.JUGADOR_1));
-                asignarPosicionJugador(jugador2, hiloCliente.getPosicionJugadores(Jugadores.JUGADOR_2));
                 hud.actualizar();
 //                if (hiloCliente.isEsteClienteTermino()) {
 //                    cambiarPantalla(new PantallaFin(juego, posicionesFinales, hiloCliente));
