@@ -321,12 +321,25 @@ public class PantallaJuego extends Pantalla {
                 if (!musicaJuego.estaReproduciendo()) {
                     musicaJuego.reproducir();
                 }
-                jugador.moverJugador(entradas, Jugadores.JUGADOR_1, hiloCliente);
-//          jugador.actualizarFisicas(listaDeEntidades, delta);
-                jugador.animar(delta);
-                jugador2.moverJugador(entradas, Jugadores.JUGADOR_2, hiloCliente);
-//          jugador2.actualizarFisicas(listaDeEntidades, delta);
-                jugador2.animar(delta);
+
+                if (hiloCliente.getNumeroJugador() == 1) {
+                    // Las entradas pertenecen al Jugador 1.
+                    jugador.moverJugador(
+                        entradas,
+                        Jugadores.JUGADOR_1,
+                        hiloCliente
+                    );
+                    jugador.animar(delta);
+
+                } else if (hiloCliente.getNumeroJugador() == 2) {
+                    // Las entradas pertenecen al Jugador 2.
+                    jugador2.moverJugador(
+                        entradas,
+                        Jugadores.JUGADOR_2,
+                        hiloCliente
+                    );
+                    jugador2.animar(delta);
+                }
 
                 asignarPosicionJugador(jugador, hiloCliente.getPosicionJugadores(Jugadores.JUGADOR_1));
                 asignarPosicionJugador(jugador2, hiloCliente.getPosicionJugadores(Jugadores.JUGADOR_2));

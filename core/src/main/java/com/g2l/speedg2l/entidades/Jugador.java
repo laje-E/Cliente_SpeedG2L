@@ -57,8 +57,10 @@ public class Jugador extends Entidad{
 
         if(izquierdaActual != izquierdaAnterior) {
             if (izquierdaActual) {
+                acelerandoIzquierda = true;
                 hiloCliente.enviarMensaje("Aprete-Izquierda");
             } else {
+                acelerandoIzquierda = false;
                 hiloCliente.enviarMensaje("NoAprete-Izquierda");
             }
             izquierdaAnterior = izquierdaActual;
@@ -66,8 +68,10 @@ public class Jugador extends Entidad{
 
         if(derechaActual != derechaAnterior) {
             if(derechaActual) {
+                acelerandoDerecha = true;
                 hiloCliente.enviarMensaje("Aprete-Derecha");
             }else{
+                acelerandoDerecha = false;
                 hiloCliente.enviarMensaje("NoAprete-Derecha");
             }
             derechaAnterior = derechaActual;
