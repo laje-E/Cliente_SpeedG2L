@@ -171,6 +171,7 @@ public class PantallaFin extends Pantalla {
 
     @Override
     public void dispose() {
+        hiloCliente.finalizarHilo();
         stage.dispose();
         efectoMeta.cerrar();
     }

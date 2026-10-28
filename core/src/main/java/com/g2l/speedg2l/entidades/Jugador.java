@@ -21,8 +21,6 @@ public class Jugador extends Entidad{
     public void asignarPosicionJugador (float posicionX, float posicionY) {
         this.posicionX = posicionX;
         this.posicionY = posicionY;
-
-        actualizarHitbox();
     }
 
     public Jugador(float ancho , float alto, float posicionX, float posicionY, String ruta){
