@@ -31,6 +31,8 @@ public class HiloCliente extends Thread{
 
     private final long TIEMPO_MAXIMO_SIN_RESPUESTA = 5000;
 
+    private boolean seDesconectoUnJugador = false;
+
     public HiloCliente(){
         try {
             direccionServer = InetAddress.getByName("255.255.255.255");
@@ -141,6 +143,9 @@ public class HiloCliente extends Thread{
             servidorConfirmado = true;
             enviarMensaje("Hola");
         }
+        if (mensaje.equals("JugadorDesconectado")){
+            seDesconectoUnJugador = true;
+        }
         if (mensaje.equals("OK")){
             direccionServer = dp.getAddress();
             servidorConfirmado = true;
@@ -199,6 +204,10 @@ public class HiloCliente extends Thread{
 
     public boolean isTodosTerminaron() {
         return todosTerminaron;
+    }
+
+    public boolean isSeDesconectoUnJugador() {
+        return seDesconectoUnJugador;
     }
 
     //private void procesarMensaje(DatagramPacket dp) {

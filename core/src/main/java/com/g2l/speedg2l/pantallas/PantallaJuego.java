@@ -80,6 +80,8 @@ public class PantallaJuego extends Pantalla {
 
     private boolean conservarHilo = false;
 
+    private Texto textojugadorDesconectado = new Texto(Recursos.FUENTE_MENU, 48, Color.GREEN);
+
     protected PantallaJuego(Game juego) {
         super(juego);
     }
@@ -139,6 +141,9 @@ public class PantallaJuego extends Pantalla {
         textoServidorNoEncontrado.centrar();
         textoServidorNoEncontrado.setY(80);
 
+        textojugadorDesconectado.setTexto("SE DESCONECTO SU RIVAL, USTED ES EL GANADOR");
+        textojugadorDesconectado.centrar();
+        textojugadorDesconectado.setY(80);
 
         hiloCliente = new HiloCliente();
         hiloCliente.start();
@@ -238,6 +243,24 @@ public class PantallaJuego extends Pantalla {
 
             b.begin();
             textoDesconexion.dibujar();
+            b.end();
+
+            stage.act(delta);
+            stage.draw();
+
+            return;
+        }
+
+        if(hiloCliente.isSeDesconectoUnJugador()){
+            Render.limpiarPantalla();
+
+            panelBotones.getContenedor().setVisible(true);
+
+            stage.getViewport().apply();
+            b.setProjectionMatrix(stage.getCamera().combined);
+
+            b.begin();
+            textojugadorDesconectado.dibujar();
             b.end();
 
             stage.act(delta);
@@ -468,8 +491,8 @@ public class PantallaJuego extends Pantalla {
                         com.badlogic.gdx.scenes.scene2d.InputEvent event,
                         float x,
                         float y) {
-                        cambiarPantalla(new PantallaMenu(juego));
                         hiloCliente.enviarMensaje("SeSalioDelJuego-" + hiloCliente.getNumeroJugador());
+                        cambiarPantalla(new PantallaMenu(juego));
                     }
                 },
                 ANCHO_BOTONES,
