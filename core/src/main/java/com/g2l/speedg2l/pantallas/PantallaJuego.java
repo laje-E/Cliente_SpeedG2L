@@ -1,7 +1,5 @@
 package com.g2l.speedg2l.pantallas;
 
-
-
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
@@ -14,8 +12,8 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.g2l.speedg2l.cliente.HiloCliente;
 import com.g2l.speedg2l.cliente.PosicionFinal;
+import com.g2l.speedg2l.cliente.ProtocolosRed;
 import com.g2l.speedg2l.componentes.Boton;
-import com.g2l.speedg2l.componentes.Imagen;
 import com.g2l.speedg2l.componentes.PanelBotones;
 import com.g2l.speedg2l.componentes.Texto;
 import com.g2l.speedg2l.componentes.interfaz.Hud;
@@ -27,9 +25,6 @@ import com.g2l.speedg2l.utilidades.Config;
 import com.g2l.speedg2l.utilidades.Entradas;
 import com.g2l.speedg2l.utilidades.Recursos;
 import com.g2l.speedg2l.utilidades.Render;
-
-import java.util.ArrayList;
-
 
 public class PantallaJuego extends Pantalla {
 
@@ -131,7 +126,7 @@ public class PantallaJuego extends Pantalla {
 
         inicioIntentoConexion = System.currentTimeMillis();
         ultimoMensajeEnviado = inicioIntentoConexion;
-        hiloCliente.enviarMensaje("Conexion");
+        hiloCliente.enviarMensaje(ProtocolosRed.CONEXION);
 
 
     }
@@ -169,7 +164,7 @@ public class PantallaJuego extends Pantalla {
 
             // Reintentar la conexión cada segundo.
             if (ahora - ultimoMensajeEnviado >= INTERVALO_REINTENTO) {
-                hiloCliente.enviarMensaje("Conexion");
+                hiloCliente.enviarMensaje(ProtocolosRed.CONEXION);
                 ultimoMensajeEnviado = ahora;
             }
 

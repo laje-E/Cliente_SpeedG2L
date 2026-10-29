@@ -103,7 +103,9 @@ public class Jugador extends Entidad{
     }
 
     public void setMoviendose(boolean moviendose) {
-        this.moviendose = moviendose;
+        if(!local){
+            this.moviendose = moviendose;
+        }
     }
 
     public void setMirandoDerecha(boolean mirandoDerecha){
