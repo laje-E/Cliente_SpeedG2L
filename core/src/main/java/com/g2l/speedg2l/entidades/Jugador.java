@@ -10,27 +10,37 @@ import java.util.ArrayList;
 
 public class Jugador extends Entidad{
 
-    private boolean acelerandoDerecha = false;
-    private boolean acelerandoIzquierda = false;
+    private Jugadores numeroJugador;
+    private boolean local;
+//    private boolean acelerandoDerecha = false;
+//    private boolean acelerandoIzquierda = false;
+    private boolean moviendose=false;
+    private boolean mirandoDerecha= true;
     private AnimacionEntidad animacion;
 
     private boolean izquierdaAnterior;
     private boolean derechaAnterior;
     private boolean arribaAnterior;
 
-    public void asignarPosicionJugador (float posicionX, float posicionY) {
+
+    public Jugador(Jugadores numeroJugador, float ancho, float alto, float posicionX, float posicionY, String ruta){
+        super(ancho, alto, posicionX, posicionY);
+        animacion = new AnimacionEntidad(ruta, 0.09f, 4, 3);
+        animacion.iniciar();
+        this.numeroJugador = numeroJugador;
+        this.local=false;
+    }
+
+    public void asignarPosicion (float posicionX, float posicionY) {
         this.posicionX = posicionX;
         this.posicionY = posicionY;
     }
 
-    public Jugador(float ancho , float alto, float posicionX, float posicionY, String ruta){
-        super(ancho, alto, posicionX, posicionY);
-        animacion = new AnimacionEntidad(ruta, 0.09f, 4, 3);
-        animacion.iniciar();
-    }
-
     public void animar(float delta) {
-        if (acelerandoDerecha || acelerandoIzquierda) {
+//        if (acelerandoDerecha || acelerandoIzquierda) {
+//            animacion.animar(delta);
+//        }
+        if (moviendose) {
             animacion.animar(delta);
         }
     }
@@ -40,7 +50,8 @@ public class Jugador extends Entidad{
             posicionX,
             posicionY,
             getAncho(),
-            getAlto()
+            getAlto(),
+            mirandoDerecha
         );
     }
 
@@ -48,17 +59,20 @@ public class Jugador extends Entidad{
         animacion.cerrar();
     }
 
-    public void moverJugador(Entradas entradas, Jugadores numeroJugador, HiloCliente hiloCliente){
+    public void moverJugador(Entradas entradas, HiloCliente hiloCliente){
         boolean izquierdaActual = entradas.izquierda();
         boolean derechaActual = entradas.derecha();
         boolean arribaActual = entradas.arriba();
 
         if(izquierdaActual != izquierdaAnterior) {
             if (izquierdaActual) {
-                acelerandoIzquierda = true;
+//                acelerandoIzquierda = true;
+                moviendose = true;
+                mirandoDerecha = false;
                 hiloCliente.enviarMensaje("Aprete-Izquierda");
             } else {
-                acelerandoIzquierda = false;
+//                acelerandoIzquierda = false;
+                moviendose = false;
                 hiloCliente.enviarMensaje("NoAprete-Izquierda");
             }
             izquierdaAnterior = izquierdaActual;
@@ -66,10 +80,13 @@ public class Jugador extends Entidad{
 
         if(derechaActual != derechaAnterior) {
             if(derechaActual) {
-                acelerandoDerecha = true;
+//                acelerandoDerecha = true;
+                moviendose = true;
+                mirandoDerecha= true;
                 hiloCliente.enviarMensaje("Aprete-Derecha");
             }else{
-                acelerandoDerecha = false;
+//                acelerandoDerecha = false;
+                moviendose = false;
                 hiloCliente.enviarMensaje("NoAprete-Derecha");
             }
             derechaAnterior = derechaActual;
@@ -79,5 +96,25 @@ public class Jugador extends Entidad{
             hiloCliente.enviarMensaje("Aprete-Arriba");
         }
         arribaAnterior = arribaActual;
+    }
+
+    public void asignarLocal() {
+        this.local = true;
+    }
+
+    public void setMoviendose(boolean moviendose) {
+        this.moviendose = moviendose;
+    }
+
+    public void setMirandoDerecha(boolean mirandoDerecha){
+        this.mirandoDerecha = mirandoDerecha;
+    }
+
+    public Jugadores getNumeroJugador() {
+        return numeroJugador;
+    }
+
+    public boolean isLocal() {
+        return local;
     }
 }

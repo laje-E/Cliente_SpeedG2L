@@ -8,8 +8,6 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.maps.MapProperties;
-import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
@@ -19,8 +17,6 @@ import com.g2l.speedg2l.cliente.PosicionFinal;
 import com.g2l.speedg2l.componentes.Boton;
 import com.g2l.speedg2l.componentes.Imagen;
 import com.g2l.speedg2l.componentes.PanelBotones;
-import com.badlogic.gdx.utils.viewport.FitViewport;
-import com.g2l.speedg2l.componentes.Imagen;
 import com.g2l.speedg2l.componentes.Texto;
 import com.g2l.speedg2l.componentes.interfaz.Hud;
 import com.g2l.speedg2l.entidades.*;
@@ -41,16 +37,13 @@ public class PantallaJuego extends Pantalla {
 
     private Jugador jugador;
     private Jugador jugador2;
+    private Jugador jugadorLocal;
+    private Jugador jugadorContrario;
+    private boolean jugadoresAsignados = false;
+
     private SpriteBatch b;
     private Musica musicaJuego;
     private Hud hud;
-
-    private Pincho pincho;
-    private Imagen imgPincho;
-
-    private ArrayList<Entidad> listaDeEntidades;
-    private ArrayList<Obstaculo> listaDeObstaculos;
-
     private Mapa mapa;
     private Camara camara;
     private Entradas entradas;
@@ -60,8 +53,6 @@ public class PantallaJuego extends Pantalla {
     private Texto textoPausa = new Texto(Recursos.FUENTE_MENU, 60, Color.RED);
 
     private Texto textoEspera = new Texto(Recursos.FUENTE_MENU, 60, Color.WHITE);
-
-    private Meta meta;
 
     private HiloCliente hiloCliente;
 
@@ -96,25 +87,17 @@ public class PantallaJuego extends Pantalla {
         mapa = new Mapa(Recursos.NIVEL_1);
         entradas = new Entradas();
 
-        jugador = new Jugador(70.0f, 70.0f, 0.0f, 33.0f, Recursos.JUGADOR_1);
-        jugador2 = new Jugador(70.0f, 70.0f, 25.0f, 33.0f, Recursos.JUGADOR_2);
+        jugador = Jugadores.JUGADOR_1.crearJugador();
+        jugador2 = Jugadores.JUGADOR_2.crearJugador();
 
         hud = new Hud();
 
-        meta = new Meta(50.0f, 1000.0f, 8000.0f, 100.0f);
-
-        listaDeEntidades = new ArrayList<>();
-        listaDeObstaculos = new ArrayList<>();
-
         textoPausa.setTexto("PAUSADO");
-
-
         textoEspera.setTexto("Esperando jugador");
         textoEspera.centrar();
         textoEspera.setY(80);
 
         Skin skin = new Skin(Gdx.files.internal("skin/uiskin.json"));
-
 
         stage = new Stage(
             new FitViewport(
@@ -128,8 +111,6 @@ public class PantallaJuego extends Pantalla {
         agregarAlStage();
 
         Gdx.input.setInputProcessor(stage);
-
-//        cargarColisionesDesdeMapa();
 
         textoDesconexion.setTexto("SERVIDOR DESCONECTADO");
         textoDesconexion.centrar();
@@ -276,25 +257,25 @@ public class PantallaJuego extends Pantalla {
 
         posicionesFinales = hiloCliente.getPosicionesFinales();
 
-        if (hiloCliente.isServidorDesconectado()) {
-            Render.limpiarPantalla();
+//        if (hiloCliente.isServidorDesconectado()) {
+//            Render.limpiarPantalla();
+//
+//            panelBotones.getContenedor().setVisible(true);
+//
+//            stage.getViewport().apply();
+//            b.setProjectionMatrix(stage.getCamera().combined);
+//
+//            b.begin();
+//            textoDesconexion.dibujar();
+//            b.end();
+//
+//            stage.act(delta);
+//            stage.draw();
+//
+//            return;
+//        }
 
-            panelBotones.getContenedor().setVisible(true);
-
-            stage.getViewport().apply();
-            b.setProjectionMatrix(stage.getCamera().combined);
-
-            b.begin();
-            textoDesconexion.dibujar();
-            b.end();
-
-            stage.act(delta);
-            stage.draw();
-
-            return;
-        }
-
-        else if(!hiloCliente.isEmpieza()){
+        if(!hiloCliente.isEmpieza()){
 
             panelBotones.getContenedor().setVisible(!hiloCliente.isEmpieza());
 
@@ -312,111 +293,70 @@ public class PantallaJuego extends Pantalla {
             stage.act(delta);
             stage.draw();
 
-        }
+        } else {
+            if (!jugadoresAsignados) {
+                asignarJugadores();
+            } else {
+                Render.limpiarPantalla();
 
+                panelBotones.getContenedor().setVisible(pausado);
 
-        else if (hiloCliente.isEmpieza()){
+                asignarPosicionJugador(jugadorLocal, hiloCliente.getPosicionJugadores(jugadorLocal.getNumeroJugador()));
+                asignarPosicionJugador(jugadorContrario, hiloCliente.getPosicionJugadores(jugadorContrario.getNumeroJugador()));
 
-            delta = Gdx.graphics.getDeltaTime();
+                camara.seguirJugador(jugadorLocal);
 
-            Render.limpiarPantalla();
+                mapa.dibujar(camara.getCamara());
 
-            panelBotones.getContenedor().setVisible(pausado);
-
-
-            asignarPosicionJugador(jugador, hiloCliente.getPosicionJugadores(Jugadores.JUGADOR_1));
-            asignarPosicionJugador(jugador2, hiloCliente.getPosicionJugadores(Jugadores.JUGADOR_2));
-            if(hiloCliente.getNumeroJugador() == 1) {
-                camara.seguirJugador(jugador);
-            }
-            else if (hiloCliente.getNumeroJugador() == 2){
-                camara.seguirJugador(jugador2);
-            }
-            mapa.dibujar(camara.getCamara());
-
-            b.setProjectionMatrix(camara.getCamara().combined);
-            b.begin();
-
-            if (entradas.escape()) {
-                pausado = !pausado;
-            }
-//
-//            if (!pausado) {
-                if (!musicaJuego.estaReproduciendo()) {
-                    musicaJuego.reproducir();
-                }
-
-            if (hiloCliente.getNumeroJugador() == 1) {
-                // Las entradas pertenecen al Jugador 1.
-                jugador.moverJugador(
-                    entradas,
-                    Jugadores.JUGADOR_1,
-                    hiloCliente
-                );
-                jugador.animar(delta);
-
-            } else if (hiloCliente.getNumeroJugador() == 2) {
-                // Las entradas pertenecen al Jugador 2.
-                jugador2.moverJugador(
-                    entradas,
-                    Jugadores.JUGADOR_2,
-                    hiloCliente
-                );
-                jugador2.animar(delta);
-            }
-
-                hud.actualizar();
-//                if (hiloCliente.isEsteClienteTermino()) {
-//                    cambiarPantalla(new PantallaFin(juego, posicionesFinales, hiloCliente));
-//                    musicaJuego.cerrar();
-//                }
-                if (hiloCliente.isEsteClienteTermino()) {
-                    conservarHilo = true;
-                    cambiarPantalla(new PantallaFin(juego, posicionesFinales, hiloCliente));
-                    musicaJuego.cerrar();
-                }
-//            }
-
-//       if(pausado) {
-////           textoPausa.setPosition(
-////               (Config.getAnchoJuego() / 2) - (textoPausa.getAncho() / 2),
-////               (Config.getAltoJuego() / 2) + (textoPausa.getAlto() / 2)
-////           );
-//           textoPausa.centrarArriba(150);
-//           textoPausa.dibujar();
-//       }
-//
-//            musicaJuego.pausar();
-//
-//
-            jugador.dibujar();
-            jugador2.dibujar();
-
-            b.end();
-
-            b.setProjectionMatrix(stage.getCamera().combined);
-//
-            if (pausado) {
+                b.setProjectionMatrix(camara.getCamara().combined);
 
                 b.begin();
 
-                textoPausa.centrarArriba(200);
-                textoPausa.dibujar();
+                    if (entradas.escape()) {
+                        pausado = !pausado;
+                    }
+
+                    if (!musicaJuego.estaReproduciendo()) {
+                        musicaJuego.reproducir();
+                    }
+
+                    jugadorLocal.moverJugador(entradas,hiloCliente);
+
+                    jugadorLocal.animar(delta);
+                    jugadorContrario.animar(delta);
+
+                    hud.actualizar();
+
+                    if (hiloCliente.isEsteClienteTermino()) {
+                        conservarHilo = true;
+                        cambiarPantalla(new PantallaFin(juego, posicionesFinales, hiloCliente));
+                        musicaJuego.cerrar();
+                    }
+
+                    jugadorLocal.dibujar();
+                    jugadorContrario.dibujar();
 
                 b.end();
 
-                dibujarPausa();
+                b.setProjectionMatrix(stage.getCamera().combined);
+
+                if (pausado) {
+                    b.begin();
+                        textoPausa.centrarArriba(200);
+                        textoPausa.dibujar();
+                    b.end();
+                    dibujarPausa();
+                }
+
+                b.begin();
+                    hud.dibujar();
+                b.end();
+
+                stage.act(delta);
+                stage.draw();
             }
-//
-            b.begin();
-
-            hud.dibujar();
-
-            b.end();
-
-            stage.act(delta);
-            stage.draw();
         }
+
     }
 
     @Override
@@ -450,30 +390,6 @@ public class PantallaJuego extends Pantalla {
         Gdx.gl.glDisable(GL20.GL_BLEND);
     }
 
-//    private void cargarColisionesDesdeMapa() {
-//        if (mapa != null && mapa.getMapa() != null) {
-//            TiledMapTileLayer capa = (TiledMapTileLayer) mapa.getMapa().getLayers().get("Capa de patrones 1");
-//            if (capa != null) {
-//                int tileAncho = (int) capa.getTileWidth();
-//                int tileAlto = (int) capa.getTileHeight();
-//
-//                for (int x = 0; x < capa.getWidth(); x++) {
-//                    for (int y = 0; y < capa.getHeight(); y++) {
-//                        TiledMapTileLayer.Cell cell = capa.getCell(x, y);
-//                        if (cell != null && cell.getTile() != null) {
-//                            MapProperties propiedades = cell.getTile().getProperties();
-//
-//                            if (propiedades.containsKey("solido") && propiedades.get("solido", Boolean.class)) {
-//                                Plataforma bloque = new Plataforma(tileAncho, tileAlto, x * tileAncho, y * tileAlto);
-//                                listaDeEntidades.add(bloque);
-//                            }
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//    }
-
     private void crearPanelBotones(Skin skin) {
         panelBotones = new PanelBotones();
 
@@ -501,9 +417,6 @@ public class PantallaJuego extends Pantalla {
             PADDING
         );
     }
-
-
-
     @Override
     public void pause() {
 
@@ -523,16 +436,51 @@ public class PantallaJuego extends Pantalla {
 
     @Override
     public void dispose() {
-//        stage.dispose();
-//        b.dispose();
-//        musicaJuego.cerrar();
-//        Render.musicaJuego = null;
-//        jugador.cerrar();
+        stage.dispose();
+        b.dispose();
+        musicaJuego.cerrar();
+        Render.musicaJuego = null;
+        jugador.cerrar();
     }
 
-    public void asignarPosicionJugador(Jugador jugadorElegido, float[] posiciones) {
+    public void asignarJugadores(){
+        int numeroJugador = hiloCliente.getNumeroJugador();
+
+        if(numeroJugador == 1){
+            jugadorLocal = jugador;
+            jugadorContrario = jugador2;
+
+            jugadoresAsignados = true;
+        }else if(numeroJugador == 2) {
+            jugadorLocal = jugador2;
+            jugadorContrario = jugador;
+
+            jugadoresAsignados = true;
+        }
+
+        jugadorLocal.asignarLocal();
+    }
+
+    public void asignarPosicionJugador(Jugador jugador, float[] posiciones) {
         if (posiciones != null) {
-            jugadorElegido.asignarPosicionJugador(posiciones[0], posiciones[1]);
+            float x = posiciones[0];
+            float y = posiciones[1];
+
+            if(!jugador.isLocal()){
+                if(x > jugador.getPosicionX()){
+                    jugador.setMoviendose(true);
+                    jugador.setMirandoDerecha(true);
+                }
+                else if(x < jugador.getPosicionX()){
+                    jugador.setMoviendose(true);
+                    jugador.setMirandoDerecha(false);
+                }
+                else{
+                    jugador.setMoviendose(false);
+                }
+            }
+
+            jugador.asignarPosicion(x, y);
         }
     }
 }
