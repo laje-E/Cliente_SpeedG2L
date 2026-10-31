@@ -3,6 +3,7 @@ package com.g2l.speedg2l.entidades;
 import com.badlogic.gdx.math.Rectangle;
 import com.g2l.speedg2l.animaciones.AnimacionEntidad;
 import com.g2l.speedg2l.cliente.HiloCliente;
+import com.g2l.speedg2l.cliente.ProtocolosRed;
 import com.g2l.speedg2l.utilidades.Direccion;
 import com.g2l.speedg2l.utilidades.Entradas;
 
@@ -69,11 +70,19 @@ public class Jugador extends Entidad{
 //                acelerandoIzquierda = true;
                 moviendose = true;
                 mirandoDerecha = false;
-                hiloCliente.enviarMensaje("Aprete-Izquierda");
+                hiloCliente.enviarMensaje(
+                    ProtocolosRed.APRETE +
+                    ProtocolosRed.SEPARADOR +
+                    ProtocolosRed.IZQUIERDA
+                );
             } else {
 //                acelerandoIzquierda = false;
                 moviendose = false;
-                hiloCliente.enviarMensaje("NoAprete-Izquierda");
+                hiloCliente.enviarMensaje(
+                    ProtocolosRed.NO_APRETE +
+                    ProtocolosRed.SEPARADOR +
+                    ProtocolosRed.IZQUIERDA
+                );
             }
             izquierdaAnterior = izquierdaActual;
         }
@@ -83,17 +92,29 @@ public class Jugador extends Entidad{
 //                acelerandoDerecha = true;
                 moviendose = true;
                 mirandoDerecha= true;
-                hiloCliente.enviarMensaje("Aprete-Derecha");
+                hiloCliente.enviarMensaje(
+                    ProtocolosRed.APRETE +
+                    ProtocolosRed.SEPARADOR +
+                    ProtocolosRed.DERECHA
+                );
             }else{
 //                acelerandoDerecha = false;
                 moviendose = false;
-                hiloCliente.enviarMensaje("NoAprete-Derecha");
+                hiloCliente.enviarMensaje(
+                    ProtocolosRed.NO_APRETE +
+                    ProtocolosRed.SEPARADOR +
+                    ProtocolosRed.DERECHA
+                );
             }
             derechaAnterior = derechaActual;
         }
 
         if(arribaActual && !arribaAnterior){
-            hiloCliente.enviarMensaje("Aprete-Arriba");
+            hiloCliente.enviarMensaje(
+                ProtocolosRed.APRETE +
+                ProtocolosRed.SEPARADOR +
+                ProtocolosRed.ARRIBA
+            );
         }
         arribaAnterior = arribaActual;
     }

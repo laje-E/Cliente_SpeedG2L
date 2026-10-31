@@ -118,20 +118,13 @@ public class HiloCliente extends Thread{
             }
 
             if (servidorConfirmado && !servidorDesconectado) {
-                long tiempoSinRespuesta =
-                    System.currentTimeMillis() - ultimoMensaje;
+                long tiempoSinRespuesta = System.currentTimeMillis() - ultimoMensaje;
 
-                if (tiempoSinRespuesta >
-                    TIEMPO_MAXIMO_SIN_RESPUESTA) {
-
+                if (tiempoSinRespuesta > TIEMPO_MAXIMO_SIN_RESPUESTA) {
                     servidorDesconectado = true;
-
-                    System.out.println(
-                        "El servidor dejó de responder."
-                    );
+                    System.out.println("El servidor dejó de responder.");
                 }
             }
-
         }
 
         System.out.println("HiloCliente terminado.");
@@ -139,44 +132,54 @@ public class HiloCliente extends Thread{
 
     private void procesarMensaje(DatagramPacket dp){
         String mensaje = (new String (dp.getData())).trim();
-        if (mensaje.equals("Hola")) {
+        if (mensaje.equals(ProtocolosRed.ESTOY_ACA)) {
             servidorConfirmado = true;
-            enviarMensaje("Hola");
+            servidorDesconectado=false;
+            return;
         }
-        if (mensaje.equals("JugadorDesconectado")){
+        if (mensaje.equals(ProtocolosRed.JUGADOR_DESCONECTADO)){
             seDesconectoUnJugador = true;
+            return;
         }
-        if (mensaje.equals("OK")){
+        if (mensaje.equals(ProtocolosRed.OK)){
             direccionServer = dp.getAddress();
             servidorConfirmado = true;
             servidorDesconectado = false;
+            return;
         }
-        if(mensaje.equals("Empezar")){
+        if(mensaje.equals(ProtocolosRed.EMPEZAR)){
             empieza = true;
+            return;
         }
-        String[] mensajePorPartes = mensaje.split("-");
-        if(mensajePorPartes[0].equals("NumeroJugador")){
-            if(mensajePorPartes[1].equals("JUGADOR_1")){
+
+        if (mensaje.equals(ProtocolosRed.TODOS_TERMINARON)) {
+            todosTerminaron = true;
+            return;
+        }
+
+        String[] mensajePorPartes = mensaje.split(ProtocolosRed.SEPARADOR);
+        if(mensajePorPartes[0].equals(ProtocolosRed.NUMERO_JUGADOR)){
+            if(mensajePorPartes[1].equals("1")){
                 numeroJugadorCliente = 1;
             }
-            else if(mensajePorPartes[1].equals("JUGADOR_2")){
+            else if(mensajePorPartes[1].equals("2")){
                 numeroJugadorCliente = 2;
             }
         }
-        if (mensajePorPartes[0].equals("Movimiento")) {
+        if (mensajePorPartes[0].equals(ProtocolosRed.MOVIMIENTO)) {
             final int X=0, Y=1;
             float[] posiciones = new float[2];
             posiciones[X] = Float.parseFloat(mensajePorPartes[1]);
             posiciones[Y] = Float.parseFloat(mensajePorPartes[2]);
-            if (mensajePorPartes[3].equals("JUGADOR_1")){
+            if (mensajePorPartes[3].equals("1")){
                 posicionJugadores.put(Jugadores.JUGADOR_1, posiciones);
             }
-            else if (mensajePorPartes[3].equals("JUGADOR_2")) {
+            else if (mensajePorPartes[3].equals("2")) {
                 posicionJugadores.put(Jugadores.JUGADOR_2, posiciones);
             }
         }
 
-        if(mensajePorPartes[0].equals("LLEGO")){
+        if(mensajePorPartes[0].equals(ProtocolosRed.LLEGO)){
             if(numeroJugadorCliente == Integer.parseInt(mensajePorPartes[1])){
                 esteClienteTermino = true;
             }
@@ -184,8 +187,7 @@ public class HiloCliente extends Thread{
             int idJugador = Integer.parseInt(mensajePorPartes[1]);
             int posicion = Integer.parseInt(mensajePorPartes[2]);
             float tiempo = Float.parseFloat(mensajePorPartes[3]);
-            posicionesFinales[posicion - 1] =
-                new PosicionFinal(tiempo, idJugador, posicion);
+            posicionesFinales[posicion - 1] = new PosicionFinal(tiempo, idJugador, posicion);
 
             if(posicion == 2){
                 todosTerminaron = true;
@@ -210,65 +212,6 @@ public class HiloCliente extends Thread{
         return seDesconectoUnJugador;
     }
 
-    //private void procesarMensaje(DatagramPacket dp) {
-//
-//    String mensaje = new String(dp.getData(), 0, dp.getLength()).trim();
-//
-//    System.out.println("[CLIENTE] Recibido: '" + mensaje + "'");
-//
-//    if (mensaje.equals("OK")) {
-//        direccionServer = dp.getAddress();
-//        return;
-//    }
-//
-//    if (mensaje.equals("Empezar")) {
-//        return;
-//    }
-//
-//    String[] mensajePorPartes = mensaje.split("-");
-//
-//    if (!mensajePorPartes[0].equals("Movimiento")) {
-//        return;
-//    }
-//
-//    if (mensajePorPartes.length != 4) {
-//        System.out.println("[CLIENTE] Paquete Movimiento inválido.");
-//        return;
-//    }
-//
-//    if (mensajePorPartes[1].isEmpty() || mensajePorPartes[2].isEmpty()) {
-//        System.out.println("[CLIENTE] Movimiento con posición vacía.");
-//        return;
-//    }
-//
-//    try {
-//        float[] posiciones = new float[2];
-//
-//        posiciones[0] = Float.parseFloat(mensajePorPartes[1]);
-//        posiciones[1] = Float.parseFloat(mensajePorPartes[2]);
-//
-//        if (mensajePorPartes[3].equals("JUGADOR_1")) {
-//            posicionJugadores.put(
-//                Jugadores.JUGADOR_1,
-//                posiciones
-//            );
-//        }
-//        else if (mensajePorPartes[3].equals("JUGADOR_2")) {
-//            posicionJugadores.put(
-//                Jugadores.JUGADOR_2,
-//                posiciones
-//            );
-//        }
-//
-//    } catch (NumberFormatException e) {
-//        System.out.println(
-//            "[CLIENTE] Posición inválida: '" +
-//                mensaje +
-//                "'"
-//        );
-//    }
-//}
-
     public float[] getPosicionJugadores(Jugadores jugadorElegido) {
         return posicionJugadores.get(jugadorElegido);
     }
@@ -278,8 +221,6 @@ public class HiloCliente extends Thread{
         if (puertoCliente != null) {
             puertoCliente.close();
             fin=true;
-        }else{
-            System.out.println("Flaco, no se cierra.");
         }
     }
     public boolean isEmpieza() {

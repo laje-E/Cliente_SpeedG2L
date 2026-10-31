@@ -127,8 +127,6 @@ public class PantallaJuego extends Pantalla {
         inicioIntentoConexion = System.currentTimeMillis();
         ultimoMensajeEnviado = inicioIntentoConexion;
         hiloCliente.enviarMensaje(ProtocolosRed.CONEXION);
-
-
     }
 
     private void agregarAlStage() {
@@ -185,7 +183,7 @@ public class PantallaJuego extends Pantalla {
             && !hiloCliente.isServidorDesconectado()
             && ahora - ultimoMensajeEnviado >= 1000) {
 
-            hiloCliente.enviarMensaje("Hola");
+            hiloCliente.enviarMensaje(ProtocolosRed.ESTAS_AHI);
             ultimoMensajeEnviado = ahora;
         }
 
@@ -243,11 +241,6 @@ public class PantallaJuego extends Pantalla {
             stage.draw();
 
             return;
-        }
-
-        if (ahora - ultimoMensajeEnviado >= 1000) {
-            hiloCliente.enviarMensaje("Hola");
-            ultimoMensajeEnviado = ahora;
         }
 
         posicionesFinales = hiloCliente.getPosicionesFinales();
@@ -402,7 +395,11 @@ public class PantallaJuego extends Pantalla {
                         com.badlogic.gdx.scenes.scene2d.InputEvent event,
                         float x,
                         float y) {
-                        hiloCliente.enviarMensaje("SeSalioDelJuego-" + hiloCliente.getNumeroJugador());
+                        hiloCliente.enviarMensaje(
+                            ProtocolosRed.SE_SALIO_DEL_JUEGO +
+                            ProtocolosRed.SEPARADOR +
+                            hiloCliente.getNumeroJugador()
+                        );
                         cambiarPantalla(new PantallaMenu(juego));
                     }
                 },
@@ -431,11 +428,11 @@ public class PantallaJuego extends Pantalla {
 
     @Override
     public void dispose() {
-        stage.dispose();
-        b.dispose();
-        musicaJuego.cerrar();
-        Render.musicaJuego = null;
-        jugador.cerrar();
+//        stage.dispose();
+//        b.dispose();
+//        musicaJuego.cerrar();
+//        Render.musicaJuego = null;
+//        jugador.cerrar();
     }
 
     public void asignarJugadores(){
