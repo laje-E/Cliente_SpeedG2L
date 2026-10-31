@@ -68,6 +68,9 @@ public class PantallaJuego extends Pantalla {
 
     private Texto textojugadorDesconectado = new Texto(Recursos.FUENTE_MENU, 48, Color.GREEN);
 
+    private Texto textoCuentaRegresiva = new Texto(Recursos.FUENTE_MENU, 200, Color.YELLOW);
+    private int ultimaCuentaMostrada = -1;
+
     protected PantallaJuego(Game juego) {
         super(juego);
     }
@@ -265,7 +268,9 @@ public class PantallaJuego extends Pantalla {
 
         if(!hiloCliente.isEmpieza()){
 
-            panelBotones.getContenedor().setVisible(!hiloCliente.isEmpieza());
+            int cuentaRegresiva = hiloCliente.getCuentaRegresiva();
+
+            panelBotones.getContenedor().setVisible(!hiloCliente.isEmpieza() && cuentaRegresiva <= 0);
 
             Render.limpiarPantalla();
 
@@ -274,7 +279,16 @@ public class PantallaJuego extends Pantalla {
 
             b.begin();
 
-            textoEspera.dibujar();
+            if (cuentaRegresiva > 0) {
+                if (cuentaRegresiva != ultimaCuentaMostrada) {
+                    textoCuentaRegresiva.setTexto(String.valueOf(cuentaRegresiva));
+                    textoCuentaRegresiva.centrar();
+                    ultimaCuentaMostrada = cuentaRegresiva;
+                }
+                textoCuentaRegresiva.dibujar();
+            } else {
+                textoEspera.dibujar();
+            }
 
             b.end();
 

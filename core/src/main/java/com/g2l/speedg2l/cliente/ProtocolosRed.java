@@ -30,5 +30,7 @@ public final class ProtocolosRed {
 
     public static final String ERROR_LIMITE_CLIENTES = "ERROR_limiteDeClientesAlcanzado";
 
+    public static final String CUENTA_REGRESIVA = "CuentaRegresiva";
+
     private ProtocolosRed() {}
 }

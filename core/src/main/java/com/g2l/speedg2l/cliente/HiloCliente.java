@@ -33,6 +33,8 @@ public class HiloCliente extends Thread{
 
     private boolean seDesconectoUnJugador = false;
 
+    private volatile int cuentaRegresiva = 0;
+
     public HiloCliente(){
         try {
             direccionServer = InetAddress.getByName("255.255.255.255");
@@ -194,10 +196,18 @@ public class HiloCliente extends Thread{
             }
         }
 
+        if (mensajePorPartes[0].equals(ProtocolosRed.CUENTA_REGRESIVA)) {
+            cuentaRegresiva = Integer.parseInt(mensajePorPartes[1]);
+        }
+
     }
 
     public PosicionFinal[] getPosicionesFinales() {
         return posicionesFinales;
+    }
+
+    public int getCuentaRegresiva() {
+        return cuentaRegresiva;
     }
 
     public boolean isEsteClienteTermino() {
