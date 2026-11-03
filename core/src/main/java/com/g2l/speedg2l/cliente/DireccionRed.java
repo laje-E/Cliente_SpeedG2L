@@ -13,6 +13,7 @@ public class DireccionRed {
     public DireccionRed (String ip, int puerto){
         try {
             this.ip = InetAddress.getByName(ip);
+            this.puerto = puerto;
         }catch (UnknownHostException event){
             event.printStackTrace();
         }
