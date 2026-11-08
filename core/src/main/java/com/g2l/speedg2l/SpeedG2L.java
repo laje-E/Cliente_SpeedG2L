@@ -25,10 +25,7 @@ public class SpeedG2L extends Game {
     @Override
     public void create() {
         this.setScreen(new PantallaMenu(this));
-        Render.app = this;
-
         b = Render.batch;
-
     }
 
     @Override
