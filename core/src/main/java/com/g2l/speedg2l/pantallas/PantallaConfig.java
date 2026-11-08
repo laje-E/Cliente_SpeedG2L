@@ -248,7 +248,6 @@ public class PantallaConfig extends Pantalla {
                         Config.getVolumenMaster() + 0.1f
                     );
 
-                    actualizarVolumen();
                     actualizarTextoVolumen();
                 }
             },
@@ -272,7 +271,6 @@ public class PantallaConfig extends Pantalla {
                         Config.getVolumenMaster() - 0.1f
                     );
 
-                    actualizarVolumen();
                     actualizarTextoVolumen();
                 }
             },
@@ -296,7 +294,6 @@ public class PantallaConfig extends Pantalla {
                         !Config.isSonidoSilenciado()
                     );
 
-                    actualizarVolumen();
                     actualizarTextoVolumen();
                     actualizarTextoSilencio();
                 }
@@ -304,20 +301,6 @@ public class PantallaConfig extends Pantalla {
             250,
             60
         );
-    }
-
-    private void actualizarVolumen() {
-        if (Render.musicaJuego == null) {
-            return;
-        }
-
-        if (Config.isSonidoSilenciado()) {
-            Render.musicaJuego.setVolumen(0.0f);
-        } else {
-            Render.musicaJuego.setVolumen(
-                Config.getVolumenMaster()
-            );
-        }
     }
 
     private Boton crearBotonVolver() {

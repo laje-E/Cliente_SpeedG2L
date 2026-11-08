@@ -27,8 +27,8 @@ public class Musica implements Cerrable {
     }
 
     public void setVolumen(float volumen) {
-
-        musica.setVolume(volumen);
+        float volumenAjustado = volumen * volumen;
+        musica.setVolume(volumenAjustado);
     }
 
     public boolean estaReproduciendo() {

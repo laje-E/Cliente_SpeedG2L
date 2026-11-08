@@ -138,21 +138,16 @@ public class PantallaJuego extends Pantalla {
 
     private void crearYaplicarMusica() {
 
-        if (Render.musicaJuego == null) {
-            Render.musicaJuego = new Musica(Recursos.MUSICA_JUEGO);
-            Render.musicaJuego.repetir(true);
-        }
+        musicaJuego = new Musica(Recursos.MUSICA_JUEGO);
+        musicaJuego.repetir(true);
+
         if (Config.isSonidoSilenciado()) {
-            Render.musicaJuego.setVolumen(0.0f);
+            musicaJuego.setVolumen(0.0f);
         } else {
-            Render.musicaJuego.setVolumen(Config.getVolumenMaster());
+            musicaJuego.setVolumen(Config.getVolumenMaster());
         }
 
-        musicaJuego = Render.musicaJuego;
-
-        if (!musicaJuego.estaReproduciendo()) {
-            musicaJuego.reproducir();
-        }
+        musicaJuego.reproducir();
     }
 
     @Override
@@ -332,7 +327,6 @@ public class PantallaJuego extends Pantalla {
                     if (hiloCliente.isEsteClienteTermino()) {
                         conservarHilo = true;
                         cambiarPantalla(new PantallaFin(juego, posicionesFinales, hiloCliente));
-                        musicaJuego.cerrar();
                     }
 
                     jugadorLocal.dibujar();
@@ -444,8 +438,9 @@ public class PantallaJuego extends Pantalla {
     public void dispose() {
 //        stage.dispose();
 //        b.dispose();
-//        musicaJuego.cerrar();
-//        Render.musicaJuego = null;
+        if (musicaJuego != null) {
+            musicaJuego.cerrar();
+        }
 //        jugador.cerrar();
     }
 
