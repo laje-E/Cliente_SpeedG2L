@@ -87,7 +87,7 @@ public class HiloCliente extends Thread{
                 procesarMensaje(dp);
 
             } catch (SocketTimeoutException timeout) {
-
+                // Si llega aca es porque paso 1 segundo y se vencio el timeout para seguir reintentando
             } catch (SocketException exception) {
 
                 if (!puertoCliente.isClosed()) {
