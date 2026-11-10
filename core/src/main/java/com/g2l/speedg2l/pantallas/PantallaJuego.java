@@ -66,6 +66,8 @@ public class PantallaJuego extends Pantalla {
     private Texto textoCuentaRegresiva = new Texto(Recursos.FUENTE_MENU, 200, Color.YELLOW, batch);
     private int ultimaCuentaMostrada = -1;
 
+    private Texto textoLimiteClientes = new Texto(Recursos.FUENTE_MENU, 48, Color.RED, batch);
+
     protected PantallaJuego(Game juego, SpriteBatch b) {
         super(juego, b);
     }
@@ -117,6 +119,10 @@ public class PantallaJuego extends Pantalla {
         textojugadorDesconectado.centrar();
         textojugadorDesconectado.setY(80);
 
+        textoLimiteClientes.setTexto("SERVIDOR COMPLETO");
+        textoLimiteClientes.centrar();
+        textoLimiteClientes.setY(80);
+
         hiloCliente = new HiloCliente();
         hiloCliente.start();
 
@@ -145,6 +151,25 @@ public class PantallaJuego extends Pantalla {
 
     @Override
     public void render(float delta) {
+
+        if (!hiloCliente.isHayEspacio()) {
+
+            Render.limpiarPantalla();
+
+            panelBotones.getContenedor().setVisible(true);
+
+            stage.getViewport().apply();
+            batch.setProjectionMatrix(stage.getCamera().combined);
+
+            batch.begin();
+            textoLimiteClientes.dibujar();
+            batch.end();
+
+            stage.act(delta);
+            stage.draw();
+
+            return;
+        }
 
         long ahora = System.currentTimeMillis();
         // 1. Todavía no recibimos una respuesta del servidor.

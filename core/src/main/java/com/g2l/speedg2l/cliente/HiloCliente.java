@@ -35,6 +35,8 @@ public class HiloCliente extends Thread{
 
     private volatile int cuentaRegresiva = 0;
 
+    private boolean hayEspacio = true;
+
     public HiloCliente(){
         try {
             direccionServer = InetAddress.getByName("255.255.255.255");
@@ -159,6 +161,11 @@ public class HiloCliente extends Thread{
             return;
         }
 
+        if (mensaje.equals(ProtocolosRed.ERROR_LIMITE_CLIENTES)) {
+            hayEspacio = false;
+            return;
+        }
+
         String[] mensajePorPartes = mensaje.split(ProtocolosRed.SEPARADOR);
         if(mensajePorPartes[0].equals(ProtocolosRed.NUMERO_JUGADOR)){
             if(mensajePorPartes[1].equals("1")){
@@ -247,5 +254,9 @@ public class HiloCliente extends Thread{
 
     public boolean isServidorConfirmado() {
         return servidorConfirmado;
+    }
+
+    public boolean isHayEspacio() {
+        return hayEspacio;
     }
 }
