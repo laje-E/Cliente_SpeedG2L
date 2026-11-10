@@ -24,7 +24,6 @@ import com.g2l.speedg2l.sonidos.Musica;
 import com.g2l.speedg2l.utilidades.Config;
 import com.g2l.speedg2l.utilidades.Entradas;
 import com.g2l.speedg2l.utilidades.Recursos;
-import com.g2l.speedg2l.utilidades.Render;
 
 public class PantallaJuego extends Pantalla {
 
@@ -109,9 +108,7 @@ public class PantallaJuego extends Pantalla {
         textoDesconexion.centrar();
         textoDesconexion.setY(80);
 
-        textoServidorNoEncontrado.setTexto(
-            "NO HAY NINGUN SERVIDOR CONECTADO"
-        );
+        textoServidorNoEncontrado.setTexto("NO HAY NINGUN SERVIDOR CONECTADO");
         textoServidorNoEncontrado.centrar();
         textoServidorNoEncontrado.setY(80);
 
@@ -149,119 +146,35 @@ public class PantallaJuego extends Pantalla {
         musicaJuego.reproducir();
     }
 
+
+
     @Override
     public void render(float delta) {
 
-        if (!hiloCliente.isHayEspacio()) {
+            actualizarComunicacionServidor();
 
-            Render.limpiarPantalla();
-
-            panelBotones.getContenedor().setVisible(true);
-
-            stage.getViewport().apply();
-            batch.setProjectionMatrix(stage.getCamera().combined);
-
-            batch.begin();
-            textoLimiteClientes.dibujar();
-            batch.end();
-
-            stage.act(delta);
-            stage.draw();
-
-            return;
-        }
-
-        long ahora = System.currentTimeMillis();
-        // 1. Todavía no recibimos una respuesta del servidor.
-        if (!hiloCliente.isServidorConfirmado()
-            && !servidorNoEncontrado) {
-
-            // Reintentar la conexión cada segundo.
-            long INTERVALO_REINTENTO = 1000;
-            if (ahora - ultimoMensajeEnviado >= INTERVALO_REINTENTO) {
-                hiloCliente.enviarMensaje(ProtocolosRed.CONEXION);
-                ultimoMensajeEnviado = ahora;
+            if (!hiloCliente.isHayEspacio()) {
+                mostrarMensajeConexion(textoLimiteClientes, delta);
+                return;
             }
 
-            // Comprobar si pasaron los 5 segundos.
-            long TIEMPO_ESPERA_SERVIDOR = 5000;
-            if (ahora - inicioIntentoConexion >= TIEMPO_ESPERA_SERVIDOR
-                && !hiloCliente.isServidorConfirmado()) {
-
-                servidorNoEncontrado = true;
-
-                System.out.println(
-                    "No se encontró ningún servidor después de 5 segundos."
-                );
+            if (servidorNoEncontrado) {
+                mostrarMensajeConexion(textoServidorNoEncontrado, delta);
+                return;
             }
-        }
 
-        // 2. Ya hay conexión: enviar mensajes de comprobación.
-        if (hiloCliente.isServidorConfirmado()
-            && !hiloCliente.isServidorDesconectado()
-            && ahora - ultimoMensajeEnviado >= 1000) {
+            if (hiloCliente.isServidorDesconectado()) {
+                mostrarMensajeConexion(textoDesconexion, delta);
+                return;
+            }
 
-            hiloCliente.enviarMensaje(ProtocolosRed.ESTAS_AHI);
-            ultimoMensajeEnviado = ahora;
-        }
+            if (hiloCliente.isSeDesconectoUnJugador()) {
+                mostrarMensajeConexion(textojugadorDesconectado, delta);
+                return;
+            }
 
-        // 3. Mostrar el mensaje si no se encontró el servidor.
-        if (servidorNoEncontrado) {
-            Render.limpiarPantalla();
 
-            panelBotones.getContenedor().setVisible(true);
-
-            stage.getViewport().apply();
-            batch.setProjectionMatrix(stage.getCamera().combined);
-
-            batch.begin();
-            textoServidorNoEncontrado.dibujar();
-            batch.end();
-
-            stage.act(delta);
-            stage.draw();
-
-            return;
-        }
-
-        // 4. Comportamiento de desconexión.
-        if (hiloCliente.isServidorDesconectado()) {
-            Render.limpiarPantalla();
-
-            panelBotones.getContenedor().setVisible(true);
-
-            stage.getViewport().apply();
-            batch.setProjectionMatrix(stage.getCamera().combined);
-
-            batch.begin();
-            textoDesconexion.dibujar();
-            batch.end();
-
-            stage.act(delta);
-            stage.draw();
-
-            return;
-        }
-
-        if(hiloCliente.isSeDesconectoUnJugador()){
-            Render.limpiarPantalla();
-
-            panelBotones.getContenedor().setVisible(true);
-
-            stage.getViewport().apply();
-            batch.setProjectionMatrix(stage.getCamera().combined);
-
-            batch.begin();
-            textojugadorDesconectado.dibujar();
-            batch.end();
-
-            stage.act(delta);
-            stage.draw();
-
-            return;
-        }
-
-        PosicionFinal[] posicionesFinales = hiloCliente.getPosicionesFinales();
+            PosicionFinal[] posicionesFinales = hiloCliente.getPosicionesFinales();
 
         if(!hiloCliente.isEmpieza()){
 
@@ -269,7 +182,7 @@ public class PantallaJuego extends Pantalla {
 
             panelBotones.getContenedor().setVisible(!hiloCliente.isEmpieza() && cuentaRegresiva <= 0);
 
-            Render.limpiarPantalla();
+            limpiarPantalla();
 
             stage.getViewport().apply();
             batch.setProjectionMatrix(stage.getCamera().combined);
@@ -296,7 +209,7 @@ public class PantallaJuego extends Pantalla {
             if (!jugadoresAsignados) {
                 asignarJugadores( );
             } else {
-                Render.limpiarPantalla();
+                limpiarPantalla();
 
                 panelBotones.getContenedor().setVisible(pausado);
 
@@ -366,6 +279,28 @@ public class PantallaJuego extends Pantalla {
         }
     }
 
+    @Override
+    public void pause() {}
+
+    @Override
+    public void resume() {}
+
+    @Override
+    public void hide() {
+        if (hiloCliente != null && !conservarHilo) {
+            hiloCliente.finalizarHilo();
+        }
+    }
+
+    @Override
+    public void dispose() {
+//        stage.dispose();
+        if (musicaJuego != null) {
+            musicaJuego.cerrar();
+        }
+//        jugador.cerrar();
+    }
+
     private void dibujarPausa() {
 
         Gdx.gl.glEnable(GL20.GL_BLEND);
@@ -407,8 +342,8 @@ public class PantallaJuego extends Pantalla {
                         float y) {
                         hiloCliente.enviarMensaje(
                             ProtocolosRed.SE_SALIO_DEL_JUEGO +
-                            ProtocolosRed.SEPARADOR +
-                            hiloCliente.getNumeroJugador()
+                                ProtocolosRed.SEPARADOR +
+                                hiloCliente.getNumeroJugador()
                         );
                         cambiarPantalla(new PantallaMenu(juego, batch));
                     }
@@ -419,31 +354,75 @@ public class PantallaJuego extends Pantalla {
             PADDING
         );
     }
-    @Override
-    public void pause() {
 
-    }
+    private void actualizarComunicacionServidor() {
 
-    @Override
-    public void resume() {
+        long ahora = System.currentTimeMillis();
 
-    }
+        if (!hiloCliente.isServidorConfirmado() && !servidorNoEncontrado) {
 
-    @Override
-    public void hide() {
-        if (hiloCliente != null && !conservarHilo) {
-            hiloCliente.finalizarHilo();
+            reintentarConexion(ahora);
+            comprobarTiempoEspera(ahora);
+        }
+
+        if (hiloCliente.isServidorConfirmado()
+            && !hiloCliente.isServidorDesconectado()) {
+
+            enviarMensajeComprobacion(ahora);
         }
     }
 
-    @Override
-    public void dispose() {
-//        stage.dispose();
-        if (musicaJuego != null) {
-            musicaJuego.cerrar();
-        }
-//        jugador.cerrar();
+
+    private void mostrarMensajeConexion(Texto texto, float delta) {
+
+        limpiarPantalla();
+
+        panelBotones.getContenedor().setVisible(true);
+
+        stage.getViewport().apply();
+        batch.setProjectionMatrix(stage.getCamera().combined);
+
+        batch.begin();
+        texto.dibujar();
+        batch.end();
+
+        stage.act(delta);
+        stage.draw();
     }
+
+
+    private void reintentarConexion(long ahora) {
+
+        final long intervaloReintento = 1000;
+
+        if (ahora - ultimoMensajeEnviado >= intervaloReintento) {
+
+            hiloCliente.enviarMensaje(ProtocolosRed.CONEXION);
+            ultimoMensajeEnviado = ahora;
+        }
+    }
+
+    private void comprobarTiempoEspera(long ahora) {
+
+        final long tiempoEsperaServidor = 5000;
+
+        if (ahora - inicioIntentoConexion >= tiempoEsperaServidor && !hiloCliente.isServidorConfirmado()){
+            servidorNoEncontrado = true;
+            System.out.println("No se encontró ningún servidor después de 5 segundos.");
+        }
+    }
+
+    private void enviarMensajeComprobacion(long ahora) {
+
+        final long intervaloComprobacion = 1000;
+
+        if (ahora - ultimoMensajeEnviado >= intervaloComprobacion) {
+
+            hiloCliente.enviarMensaje(ProtocolosRed.ESTAS_AHI);
+            ultimoMensajeEnviado = ahora;
+        }
+    }
+
 
     public void asignarJugadores(){
         int numeroJugador = hiloCliente.getNumeroJugador();

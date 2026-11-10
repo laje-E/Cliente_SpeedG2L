@@ -70,65 +70,47 @@ public class HiloCliente extends Thread{
     }
 
     @Override
-    public void run(){
-        if(puertoCliente == null){
+    public void run() {
+
+        if (puertoCliente == null) {
             System.err.println("El socket del cliente no está disponible.");
             return;
         }
 
-        while(!puertoCliente.isClosed()) {
+        while (!puertoCliente.isClosed()) {
 
             byte[] data = new byte[1024];
             DatagramPacket dp = new DatagramPacket(data, data.length);
 
-            try{
+            try {
                 puertoCliente.receive(dp);
 
-                // Llegó algo del servidor: actualizamos el último contacto
                 ultimoMensaje = System.currentTimeMillis();
                 procesarMensaje(dp);
 
-            }catch (SocketTimeoutException timeout) {
+            } catch (SocketTimeoutException timeout) {
+                // Si llega aca es porque paso 1 segundo y se vencio el timeout para seguir reintentando
+            } catch (SocketException exception) {
 
-                // El tiempo de espera no debe finalizar el hilo.
-                if (servidorConfirmado && !servidorDesconectado) {
-                    long ahora = System.currentTimeMillis();
-
-                    if (ahora - ultimoMensaje >= TIEMPO_MAXIMO_SIN_RESPUESTA) {
-                        servidorDesconectado = true;
-
-                        System.out.println(
-                            "El servidor se desconectó."
-                        );
-                    }
-                }
-
-            }catch (SocketException exception) {
-                // Cerrar el socket del cliente es una finalización normal.
-                if (!puertoCliente.isClosed()){
+                if (!puertoCliente.isClosed()) {
                     exception.printStackTrace();
                 }
 
-            }catch (IOException event) {
-                if(puertoCliente.isClosed()) {
+            } catch (IOException event) {
+
+                if (puertoCliente.isClosed()) {
                     break;
                 }
+
                 event.printStackTrace();
                 break;
             }
 
-            if(puertoCliente.isClosed()) {
+            if (puertoCliente.isClosed()) {
                 break;
             }
 
-            if (servidorConfirmado && !servidorDesconectado) {
-                long tiempoSinRespuesta = System.currentTimeMillis() - ultimoMensaje;
-
-                if (tiempoSinRespuesta > TIEMPO_MAXIMO_SIN_RESPUESTA) {
-                    servidorDesconectado = true;
-                    System.out.println("El servidor dejó de responder.");
-                }
-            }
+            revisarConexionServidor();
         }
 
         System.out.println("HiloCliente terminado.");
@@ -209,12 +191,46 @@ public class HiloCliente extends Thread{
 
     }
 
+
+    private void revisarConexionServidor() {
+
+        if (!servidorConfirmado || servidorDesconectado) {
+            return;
+        }
+
+        long tiempoSinRespuesta = System.currentTimeMillis() - ultimoMensaje;
+
+        if (tiempoSinRespuesta >= TIEMPO_MAXIMO_SIN_RESPUESTA) {
+            servidorDesconectado = true;
+
+            System.out.println("El servidor dejó de responder.");
+        }
+    }
+
+
+
+
+    public void finalizarHilo() {
+        if (puertoCliente != null) {
+            puertoCliente.close();
+            fin=true;
+        }
+    }
+
     public PosicionFinal[] getPosicionesFinales() {
         return posicionesFinales;
     }
 
     public int getCuentaRegresiva() {
         return cuentaRegresiva;
+    }
+
+    public float[] getPosicionJugadores(Jugadores jugadorElegido) {
+        return posicionJugadores.get(jugadorElegido);
+    }
+
+    public int getNumeroJugador() {
+        return numeroJugadorCliente;
     }
 
     public boolean isEsteClienteTermino() {
@@ -229,23 +245,8 @@ public class HiloCliente extends Thread{
         return seDesconectoUnJugador;
     }
 
-    public float[] getPosicionJugadores(Jugadores jugadorElegido) {
-        return posicionJugadores.get(jugadorElegido);
-    }
-
-
-    public void finalizarHilo() {
-        if (puertoCliente != null) {
-            puertoCliente.close();
-            fin=true;
-        }
-    }
     public boolean isEmpieza() {
         return empieza;
-    }
-
-    public int getNumeroJugador() {
-        return numeroJugadorCliente;
     }
 
     public boolean isServidorDesconectado() {

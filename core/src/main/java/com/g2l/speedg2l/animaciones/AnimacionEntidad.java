@@ -5,7 +5,6 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.g2l.speedg2l.Cerrable;
-import com.g2l.speedg2l.utilidades.Render;
 
 public class AnimacionEntidad extends Animacion implements Cerrable {
 

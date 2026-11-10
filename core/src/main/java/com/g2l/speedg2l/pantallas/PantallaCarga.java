@@ -6,7 +6,6 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.g2l.speedg2l.componentes.Imagen;
 import com.g2l.speedg2l.animaciones.Fade;
 import com.g2l.speedg2l.utilidades.Recursos;
-import com.g2l.speedg2l.utilidades.Render;
 
 public class PantallaCarga extends Pantalla {
 
@@ -29,7 +28,7 @@ public class PantallaCarga extends Pantalla {
 
     @Override
     public void render(float delta) {
-        Render.limpiarPantalla();
+        limpiarPantalla();
 
         fade.iniciar();
 

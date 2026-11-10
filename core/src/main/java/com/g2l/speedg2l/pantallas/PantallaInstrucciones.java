@@ -11,9 +11,6 @@ import com.g2l.speedg2l.componentes.Boton;
 import com.g2l.speedg2l.componentes.PanelBotones;
 import com.g2l.speedg2l.componentes.Texto;
 import com.g2l.speedg2l.utilidades.Recursos;
-import com.g2l.speedg2l.utilidades.Render;
-
-import java.awt.*;
 
 public class PantallaInstrucciones extends Pantalla{
     private Texto titulo;
@@ -97,7 +94,7 @@ public class PantallaInstrucciones extends Pantalla{
 
     @Override
     public void render(float delta) {
-        Render.limpiarPantalla();
+        limpiarPantalla();
         configViewport.aplicarViewport(batch);
         batch.begin();
 

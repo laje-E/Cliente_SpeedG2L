@@ -15,7 +15,6 @@ import com.g2l.speedg2l.cliente.PosicionFinal;
 import com.g2l.speedg2l.sonidos.EfectoSonido;
 import com.g2l.speedg2l.utilidades.Config;
 import com.g2l.speedg2l.utilidades.Recursos;
-import com.g2l.speedg2l.utilidades.Render;
 
 public class PantallaFin extends Pantalla {
 
@@ -113,7 +112,7 @@ public class PantallaFin extends Pantalla {
 
     @Override
     public void render(float delta) {
-        Render.limpiarPantalla();
+        limpiarPantalla();
 
         posiciones = hiloCliente.getPosicionesFinales();
 
