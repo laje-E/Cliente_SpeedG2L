@@ -42,18 +42,11 @@ public class HiloCliente extends Thread{
             direccionServer = InetAddress.getByName("255.255.255.255");
             puertoCliente = new DatagramSocket();
             puertoCliente.setSoTimeout(1000);
-//            inicializarHashMap();
         }catch (SocketException | UnknownHostException evento){
             evento.printStackTrace();
         }
     }
 
-//    private void inicializarHashMap() {
-//        float[] arrayDeCeros = {0, 33};
-//        for(int i=0; i<Jugadores.values().length; i++){
-//            posicionJugadores.put(Jugadores.values()[i], arrayDeCeros);
-//        }
-//    }
 
     public void enviarMensaje(String mensaje){
         if(puertoCliente == null || puertoCliente.isClosed()){

@@ -158,6 +158,11 @@ public class PantallaJuego extends Pantalla {
                 return;
             }
 
+            if (hiloCliente.isSeDesconectoUnJugador()) {
+                mostrarMensajeConexion(textojugadorDesconectado, delta);
+                return;
+            }
+
             if (servidorNoEncontrado) {
                 mostrarMensajeConexion(textoServidorNoEncontrado, delta);
                 return;
@@ -165,11 +170,6 @@ public class PantallaJuego extends Pantalla {
 
             if (hiloCliente.isServidorDesconectado()) {
                 mostrarMensajeConexion(textoDesconexion, delta);
-                return;
-            }
-
-            if (hiloCliente.isSeDesconectoUnJugador()) {
-                mostrarMensajeConexion(textojugadorDesconectado, delta);
                 return;
             }
 
