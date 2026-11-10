@@ -2,21 +2,23 @@ package com.g2l.speedg2l.componentes;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.g2l.speedg2l.Cerrable;
 import com.g2l.speedg2l.utilidades.Config;
-import com.g2l.speedg2l.utilidades.Render;
 
 public class Imagen implements Cerrable {
     private Texture t;
+    private SpriteBatch batch;
     private Sprite s;
 
-    public Imagen(String ruta){
+    public Imagen(String ruta, SpriteBatch batch){
         t = new Texture(ruta);
+        this.batch = batch;
         s = new Sprite(t);
     }
 
     public void dibujar(){
-        s.draw(Render.batch);
+        s.draw(batch);
     }
 
     public void setX(float x){

@@ -4,19 +4,22 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFontParameter;
 import com.g2l.speedg2l.Cerrable;
 import com.g2l.speedg2l.utilidades.Config;
-import com.g2l.speedg2l.utilidades.Render;
 
 public class Texto implements Cerrable {
     private BitmapFont fuente;
+    private SpriteBatch batch;
     private float x=0, y=0;
     private String texto;
     private GlyphLayout layout;
 
-    public Texto(String rutaFuente, int tamanio, Color color) {
+    public Texto(String rutaFuente, int tamanio, Color color, SpriteBatch batch) {
+        this.batch = batch;
+
         FreeTypeFontGenerator generador = new FreeTypeFontGenerator(Gdx.files.internal(rutaFuente));
         FreeTypeFontParameter parametros = new FreeTypeFontParameter();
 
@@ -29,7 +32,7 @@ public class Texto implements Cerrable {
     }
 
     public void dibujar() {
-        fuente.draw(Render.batch, texto, x, y);
+        fuente.draw(batch, texto, x, y);
     }
 
     public void setTexto(String texto) {
@@ -78,7 +81,5 @@ public class Texto implements Cerrable {
     public void cerrar() {
         fuente.dispose();
     }
-
-    // ver si conviene hacer un setTamanio tambien.
 
 }

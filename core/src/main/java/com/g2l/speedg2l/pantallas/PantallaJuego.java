@@ -36,7 +36,6 @@ public class PantallaJuego extends Pantalla {
     private Jugador jugadorContrario;
     private boolean jugadoresAsignados = false;
 
-    private SpriteBatch b;
     private Musica musicaJuego;
     private Hud hud;
     private Mapa mapa;
@@ -45,50 +44,44 @@ public class PantallaJuego extends Pantalla {
 
     private boolean pausado = false;
     private ShapeRenderer pantallaPausa = new ShapeRenderer();
-    private Texto textoPausa = new Texto(Recursos.FUENTE_MENU, 60, Color.RED);
+    private Texto textoPausa = new Texto(Recursos.FUENTE_MENU, 60, Color.RED, batch);
 
-    private Texto textoEspera = new Texto(Recursos.FUENTE_MENU, 60, Color.WHITE);
+    private Texto textoEspera = new Texto(Recursos.FUENTE_MENU, 60, Color.WHITE, batch);
 
     private HiloCliente hiloCliente;
-
-    private PosicionFinal[] posicionesFinales = new PosicionFinal[2];
 
     private PanelBotones panelBotones;
 
     private long ultimoMensajeEnviado = 0;
-    private Texto textoDesconexion = new Texto(Recursos.FUENTE_MENU, 48, Color.RED);
+    private Texto textoDesconexion = new Texto(Recursos.FUENTE_MENU, 48, Color.RED, batch);
 
     private long inicioIntentoConexion = 0;
-    private final long TIEMPO_ESPERA_SERVIDOR = 5000;
-    private final long INTERVALO_REINTENTO = 1000;
     private boolean servidorNoEncontrado = false;
-    private Texto textoServidorNoEncontrado = new Texto(Recursos.FUENTE_MENU, 48, Color.RED);
+    private Texto textoServidorNoEncontrado = new Texto(Recursos.FUENTE_MENU, 48, Color.RED, batch);
 
     private boolean conservarHilo = false;
 
-    private Texto textojugadorDesconectado = new Texto(Recursos.FUENTE_MENU, 48, Color.GREEN);
+    private Texto textojugadorDesconectado = new Texto(Recursos.FUENTE_MENU, 48, Color.GREEN, batch);
 
-    private Texto textoCuentaRegresiva = new Texto(Recursos.FUENTE_MENU, 200, Color.YELLOW);
+    private Texto textoCuentaRegresiva = new Texto(Recursos.FUENTE_MENU, 200, Color.YELLOW, batch);
     private int ultimaCuentaMostrada = -1;
 
-    protected PantallaJuego(Game juego) {
-        super(juego);
+    protected PantallaJuego(Game juego, SpriteBatch b) {
+        super(juego, b);
     }
 
     @Override
     public void show() {
-        b = Render.batch;
-
         crearYaplicarMusica();
 
         camara = new Camara(configViewport);
         mapa = new Mapa(Recursos.NIVEL_1);
         entradas = new Entradas();
 
-        jugador = Jugadores.JUGADOR_1.crearJugador();
-        jugador2 = Jugadores.JUGADOR_2.crearJugador();
+        jugador = Jugadores.JUGADOR_1.crearJugador(batch);
+        jugador2 = Jugadores.JUGADOR_2.crearJugador(batch);
 
-        hud = new Hud();
+        hud = new Hud(batch);
 
         textoPausa.setTexto("PAUSADO");
         textoEspera.setTexto("Esperando jugador");
@@ -159,12 +152,14 @@ public class PantallaJuego extends Pantalla {
             && !servidorNoEncontrado) {
 
             // Reintentar la conexión cada segundo.
+            long INTERVALO_REINTENTO = 1000;
             if (ahora - ultimoMensajeEnviado >= INTERVALO_REINTENTO) {
                 hiloCliente.enviarMensaje(ProtocolosRed.CONEXION);
                 ultimoMensajeEnviado = ahora;
             }
 
             // Comprobar si pasaron los 5 segundos.
+            long TIEMPO_ESPERA_SERVIDOR = 5000;
             if (ahora - inicioIntentoConexion >= TIEMPO_ESPERA_SERVIDOR
                 && !hiloCliente.isServidorConfirmado()) {
 
@@ -192,11 +187,11 @@ public class PantallaJuego extends Pantalla {
             panelBotones.getContenedor().setVisible(true);
 
             stage.getViewport().apply();
-            b.setProjectionMatrix(stage.getCamera().combined);
+            batch.setProjectionMatrix(stage.getCamera().combined);
 
-            b.begin();
+            batch.begin();
             textoServidorNoEncontrado.dibujar();
-            b.end();
+            batch.end();
 
             stage.act(delta);
             stage.draw();
@@ -211,11 +206,11 @@ public class PantallaJuego extends Pantalla {
             panelBotones.getContenedor().setVisible(true);
 
             stage.getViewport().apply();
-            b.setProjectionMatrix(stage.getCamera().combined);
+            batch.setProjectionMatrix(stage.getCamera().combined);
 
-            b.begin();
+            batch.begin();
             textoDesconexion.dibujar();
-            b.end();
+            batch.end();
 
             stage.act(delta);
             stage.draw();
@@ -229,11 +224,11 @@ public class PantallaJuego extends Pantalla {
             panelBotones.getContenedor().setVisible(true);
 
             stage.getViewport().apply();
-            b.setProjectionMatrix(stage.getCamera().combined);
+            batch.setProjectionMatrix(stage.getCamera().combined);
 
-            b.begin();
+            batch.begin();
             textojugadorDesconectado.dibujar();
-            b.end();
+            batch.end();
 
             stage.act(delta);
             stage.draw();
@@ -241,25 +236,7 @@ public class PantallaJuego extends Pantalla {
             return;
         }
 
-        posicionesFinales = hiloCliente.getPosicionesFinales();
-
-//        if (hiloCliente.isServidorDesconectado()) {
-//            Render.limpiarPantalla();
-//
-//            panelBotones.getContenedor().setVisible(true);
-//
-//            stage.getViewport().apply();
-//            b.setProjectionMatrix(stage.getCamera().combined);
-//
-//            b.begin();
-//            textoDesconexion.dibujar();
-//            b.end();
-//
-//            stage.act(delta);
-//            stage.draw();
-//
-//            return;
-//        }
+        PosicionFinal[] posicionesFinales = hiloCliente.getPosicionesFinales();
 
         if(!hiloCliente.isEmpieza()){
 
@@ -270,9 +247,9 @@ public class PantallaJuego extends Pantalla {
             Render.limpiarPantalla();
 
             stage.getViewport().apply();
-            b.setProjectionMatrix(stage.getCamera().combined);
+            batch.setProjectionMatrix(stage.getCamera().combined);
 
-            b.begin();
+            batch.begin();
 
             if (cuentaRegresiva > 0) {
                 if (cuentaRegresiva != ultimaCuentaMostrada) {
@@ -285,14 +262,14 @@ public class PantallaJuego extends Pantalla {
                 textoEspera.dibujar();
             }
 
-            b.end();
+            batch.end();
 
             stage.act(delta);
             stage.draw();
 
         } else {
             if (!jugadoresAsignados) {
-                asignarJugadores();
+                asignarJugadores( );
             } else {
                 Render.limpiarPantalla();
 
@@ -305,9 +282,9 @@ public class PantallaJuego extends Pantalla {
 
                 mapa.dibujar(camara.getCamara());
 
-                b.setProjectionMatrix(camara.getCamara().combined);
+                batch.setProjectionMatrix(camara.getCamara().combined);
 
-                b.begin();
+                batch.begin();
 
                     if (entradas.escape()) {
                         pausado = !pausado;
@@ -326,27 +303,27 @@ public class PantallaJuego extends Pantalla {
 
                     if (hiloCliente.isEsteClienteTermino()) {
                         conservarHilo = true;
-                        cambiarPantalla(new PantallaFin(juego, posicionesFinales, hiloCliente));
+                        cambiarPantalla(new PantallaFin(juego, posicionesFinales, hiloCliente, batch));
                     }
 
                     jugadorLocal.dibujar();
                     jugadorContrario.dibujar();
 
-                b.end();
+                batch.end();
 
-                b.setProjectionMatrix(stage.getCamera().combined);
+                batch.setProjectionMatrix(stage.getCamera().combined);
 
                 if (pausado) {
-                    b.begin();
+                    batch.begin();
                         textoPausa.centrarArriba(200);
                         textoPausa.dibujar();
-                    b.end();
+                    batch.end();
                     dibujarPausa();
                 }
 
-                b.begin();
+                batch.begin();
                     hud.dibujar();
-                b.end();
+                batch.end();
 
                 stage.act(delta);
                 stage.draw();
@@ -408,7 +385,7 @@ public class PantallaJuego extends Pantalla {
                             ProtocolosRed.SEPARADOR +
                             hiloCliente.getNumeroJugador()
                         );
-                        cambiarPantalla(new PantallaMenu(juego));
+                        cambiarPantalla(new PantallaMenu(juego, batch));
                     }
                 },
                 ANCHO_BOTONES,
@@ -437,7 +414,6 @@ public class PantallaJuego extends Pantalla {
     @Override
     public void dispose() {
 //        stage.dispose();
-//        b.dispose();
         if (musicaJuego != null) {
             musicaJuego.cerrar();
         }

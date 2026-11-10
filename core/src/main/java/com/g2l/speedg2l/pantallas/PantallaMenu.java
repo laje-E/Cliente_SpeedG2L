@@ -20,20 +20,17 @@ public class PantallaMenu extends Pantalla{
     private Stage stage;
     private PanelBotones panelBotones;
     private Imagen imagenFondo;
-    private SpriteBatch b;
     private Texto texto;
 
-
-    public PantallaMenu(Game juego) {
-        super(juego);
+    public PantallaMenu(Game juego, SpriteBatch b) {
+        super(juego, b);
     }
 
     @Override
     public void show() {
-        b = Render.batch;
-        imagenFondo = new Imagen(Recursos.FONDO_MENU);
+        imagenFondo = new Imagen(Recursos.FONDO_MENU, batch);
         imagenFondo.setSize(Config.getAnchoJuego(), Config.getAltoJuego());
-        texto = new Texto(Recursos.FUENTE_MENU, 60, Color.RED);
+        texto = new Texto(Recursos.FUENTE_MENU, 60, Color.RED, batch);
         texto.setTexto("SpeedG2L");
         texto.centrarArriba(100);
 
@@ -54,12 +51,12 @@ public class PantallaMenu extends Pantalla{
     public void render(float delta) {
         Render.limpiarPantalla();
 
-        configViewport.aplicarViewport(b);
-        b.begin();
+        configViewport.aplicarViewport(batch);
+        batch.begin();
         imagenFondo.dibujar();
         texto.dibujar();
 
-        b.end();
+        batch.end();
         stage.act(delta);
         stage.draw();
     }
@@ -103,7 +100,7 @@ public class PantallaMenu extends Pantalla{
                         com.badlogic.gdx.scenes.scene2d.InputEvent event,
                         float x,
                         float y) {
-                        cambiarPantalla(new PantallaJuego(juego));
+                        cambiarPantalla(new PantallaJuego(juego, batch));
                     }
                 },
                 ANCHO_BOTONES,
@@ -120,7 +117,7 @@ public class PantallaMenu extends Pantalla{
                         com.badlogic.gdx.scenes.scene2d.InputEvent event,
                         float x,
                         float y) {
-                        cambiarPantalla(new PantallaInstrucciones(juego));
+                        cambiarPantalla(new PantallaInstrucciones(juego, batch));
                     }
                 },
                 ANCHO_BOTONES,
@@ -139,7 +136,7 @@ public class PantallaMenu extends Pantalla{
                         com.badlogic.gdx.scenes.scene2d.InputEvent event,
                         float x,
                         float y) {
-                        cambiarPantalla(new PantallaConfig(juego));
+                        cambiarPantalla(new PantallaConfig(juego, batch));
                     }
                 },
                 ANCHO_BOTONES,
@@ -152,6 +149,7 @@ public class PantallaMenu extends Pantalla{
             new Boton(
                 "Salir",
                 skin,
+
                 new ClickListener() {
                     @Override
                     public void clicked(

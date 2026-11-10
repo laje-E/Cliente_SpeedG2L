@@ -2,40 +2,29 @@
 package com.g2l.speedg2l.pantallas;
 
 import com.badlogic.gdx.Game;
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-
 import com.g2l.speedg2l.componentes.Imagen;
 import com.g2l.speedg2l.animaciones.Fade;
-import com.g2l.speedg2l.utilidades.Entradas;
 import com.g2l.speedg2l.utilidades.Recursos;
 import com.g2l.speedg2l.utilidades.Render;
 
 public class PantallaCarga extends Pantalla {
 
     private Imagen imagenFondo;
-    private SpriteBatch b;
-    private Entradas entradas;
     private Fade fade;
 
-    protected PantallaCarga(Game juego) {
-        super(juego);
+    public PantallaCarga(Game juego, SpriteBatch b) {
+        super(juego, b);
     }
 
     @Override
     public void show() {
-        b = Render.batch;
-
-        imagenFondo = new Imagen(Recursos.FONDO_CARGA);
+        imagenFondo = new Imagen(Recursos.FONDO_CARGA, batch);
         imagenFondo.setSize(405, 512);
         imagenFondo.centrar();
         imagenFondo.setTransparencia(0);
 
         fade = new Fade(5.0f, imagenFondo);
-
-        entradas = new Entradas();
-//        Gdx.input.setInputProcessor(entradas);
     }
 
     @Override
@@ -44,14 +33,14 @@ public class PantallaCarga extends Pantalla {
 
         fade.iniciar();
 
-        configViewport.aplicarViewport(b);
+        configViewport.aplicarViewport(batch);
 
-        b.begin();
+        batch.begin();
         imagenFondo.dibujar();
-        b.end();
+        batch.end();
 
         if (fade.isTerminado()) {
-            cambiarPantalla(new PantallaMenu(juego));
+            cambiarPantalla(new PantallaMenu(juego, batch));
         }
     }
 
@@ -65,18 +54,12 @@ public class PantallaCarga extends Pantalla {
 
     @Override
     public void hide() {
-        Gdx.input.setInputProcessor(null);
     }
 
     @Override
     public void dispose() {
-        Gdx.input.setInputProcessor(null);
-
         if (imagenFondo != null) {
             imagenFondo.cerrar();
-            imagenFondo = null;
         }
-
-        // Render.batch es compartido; no se debe liberar desde esta pantalla.
     }
 }

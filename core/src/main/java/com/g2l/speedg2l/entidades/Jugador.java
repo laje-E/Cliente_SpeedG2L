@@ -1,5 +1,6 @@
 package com.g2l.speedg2l.entidades;
 
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import com.g2l.speedg2l.animaciones.AnimacionEntidad;
 import com.g2l.speedg2l.cliente.HiloCliente;
@@ -24,9 +25,9 @@ public class Jugador extends Entidad{
     private boolean arribaAnterior;
 
 
-    public Jugador(Jugadores numeroJugador, float ancho, float alto, float posicionX, float posicionY, String ruta){
+    public Jugador(Jugadores numeroJugador, float ancho, float alto, float posicionX, float posicionY, SpriteBatch batch, String ruta){
         super(ancho, alto, posicionX, posicionY);
-        animacion = new AnimacionEntidad(ruta, 0.09f, 4, 3);
+        animacion = new AnimacionEntidad(ruta, 0.09f, 4, 3, batch);
         animacion.iniciar();
         this.numeroJugador = numeroJugador;
         this.local=false;
@@ -38,9 +39,6 @@ public class Jugador extends Entidad{
     }
 
     public void animar(float delta) {
-//        if (acelerandoDerecha || acelerandoIzquierda) {
-//            animacion.animar(delta);
-//        }
         if (moviendose) {
             animacion.animar(delta);
         }
@@ -67,7 +65,6 @@ public class Jugador extends Entidad{
 
         if(izquierdaActual != izquierdaAnterior) {
             if (izquierdaActual) {
-//                acelerandoIzquierda = true;
                 moviendose = true;
                 mirandoDerecha = false;
                 hiloCliente.enviarMensaje(
@@ -76,7 +73,6 @@ public class Jugador extends Entidad{
                     ProtocolosRed.IZQUIERDA
                 );
             } else {
-//                acelerandoIzquierda = false;
                 moviendose = false;
                 hiloCliente.enviarMensaje(
                     ProtocolosRed.NO_APRETE +
@@ -89,7 +85,6 @@ public class Jugador extends Entidad{
 
         if(derechaActual != derechaAnterior) {
             if(derechaActual) {
-//                acelerandoDerecha = true;
                 moviendose = true;
                 mirandoDerecha= true;
                 hiloCliente.enviarMensaje(
@@ -98,7 +93,6 @@ public class Jugador extends Entidad{
                     ProtocolosRed.DERECHA
                 );
             }else{
-//                acelerandoDerecha = false;
                 moviendose = false;
                 hiloCliente.enviarMensaje(
                     ProtocolosRed.NO_APRETE +

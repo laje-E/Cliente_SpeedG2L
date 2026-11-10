@@ -1,5 +1,5 @@
 package com.g2l.speedg2l.entidades;
-
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.g2l.speedg2l.utilidades.Recursos;
 
 public enum Jugadores {
@@ -12,10 +12,9 @@ public enum Jugadores {
         this.ruta = ruta;
     }
 
-    public Jugador crearJugador(){
-        return new Jugador(this, 70f, 70f, 0,0, ruta);
-    }
-}
+    public Jugador crearJugador(SpriteBatch batch) {
+        return new Jugador(this, 70f, 70f, 0, 0, batch, ruta);
+    }}
 
 
 

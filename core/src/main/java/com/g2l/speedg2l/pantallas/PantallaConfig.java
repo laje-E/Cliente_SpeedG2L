@@ -4,6 +4,7 @@ package com.g2l.speedg2l.pantallas;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Graphics;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -30,8 +31,8 @@ public class PantallaConfig extends Pantalla {
 
     private Resolucion[] resoluciones;
 
-    public PantallaConfig(Game juego) {
-        super(juego);
+    public PantallaConfig(Game juego, SpriteBatch b) {
+        super(juego, b);
     }
 
     @Override
@@ -314,7 +315,7 @@ public class PantallaConfig extends Pantalla {
                     float x,
                     float y
                 ) {
-                    cambiarPantalla(new PantallaMenu(juego));
+                    cambiarPantalla(new PantallaMenu(juego, batch));
                 }
             },
             250,
@@ -369,7 +370,7 @@ public class PantallaConfig extends Pantalla {
     public void render(float delta) {
         Render.limpiarPantalla();
 
-        configViewport.aplicarViewport(Render.batch);
+        configViewport.aplicarViewport(batch);
 
         stage.act(delta);
         stage.draw();
@@ -394,12 +395,10 @@ public class PantallaConfig extends Pantalla {
 
         if (stage != null) {
             stage.dispose();
-            stage = null;
         }
 
         if (skin != null) {
             skin.dispose();
-            skin = null;
         }
     }
 }

@@ -22,7 +22,6 @@ public class PantallaFin extends Pantalla {
     private Stage stage;
     private Boton btnSalir;
     private PanelBotones panelBotones;
-    private SpriteBatch b;
     private EfectoSonido efectoMeta;
     private Texto cronometro;
     private float tiempo;
@@ -31,8 +30,8 @@ public class PantallaFin extends Pantalla {
     private Texto textoResultados;
     private HiloCliente hiloCliente;
 
-    public PantallaFin(Game juego, PosicionFinal[] posiciones, HiloCliente hiloCliente) {
-        super(juego);
+    public PantallaFin(Game juego, PosicionFinal[] posiciones, HiloCliente hiloCliente, SpriteBatch b) {
+        super(juego, b);
         this.posiciones = posiciones;
         this.hiloCliente = hiloCliente;
     }
@@ -45,10 +44,9 @@ public class PantallaFin extends Pantalla {
         textoResultados = new Texto(
             Recursos.FUENTE_MENU,
             35,
-            Color.GREEN
+            Color.GREEN,
+            batch
         );
-
-        b = Render.batch;
 
         stage = new Stage(configViewport.getViewport());
 
@@ -59,17 +57,6 @@ public class PantallaFin extends Pantalla {
             efectoMeta.setVolumen(Config.getVolumenMaster());
             efectoMeta.reproducir();
         }
-
-//
-//        cronometro = new Texto(Recursos.FUENTE_MENU, 60, Color.MAROON);
-//
-//        int minutos = (int) tiempo / 60;
-//        int segundos = (int) tiempo % 60;
-//        int centesimas = (int) (tiempo * 100) % 100;
-//
-//        cronometro.setTexto("Tiempo final:\n" + "min: " + minutos + " seg: " + segundos + "," + centesimas);
-//
-//        cronometro.centrarArriba(150);
 
         Skin skin = new Skin(Gdx.files.internal("skin/uiskin.json"));
 
@@ -88,16 +75,8 @@ public class PantallaFin extends Pantalla {
 
             if (resultado == null) {
                 texto += (i+1) + "° puesto: En carrera\n";
-//                texto.append(i + 1)
-//                    .append("° puesto: En carrera\n");
             } else {
                 texto += (resultado.getNumeroPosicion()) + "° puesto: Jugador " + (resultado.getIdJugador()) + " - " + (String.format("%.2f s", resultado.getTiempo())) + "\n";
-//                texto.append(resultado.getNumeroPosicion())
-//                    .append("° puesto: Jugador ")
-//                    .append(resultado.getIdJugador())
-//                    .append(" - ")
-//                    .append(String.format("%.2f s", resultado.getTiempo()))
-//                    .append("\n");
             }
         }
 
@@ -122,7 +101,7 @@ public class PantallaFin extends Pantalla {
                         com.badlogic.gdx.scenes.scene2d.InputEvent event,
                         float x,
                         float y) {
-                        cambiarPantalla(new PantallaMenu(juego));
+                        cambiarPantalla(new PantallaMenu(juego, batch));
                     }
                 },
                 ANCHO_BOTONES,
@@ -140,13 +119,11 @@ public class PantallaFin extends Pantalla {
 
         actualizarResultados(posiciones);
 
-        configViewport.aplicarViewport(b);
-        b.begin();
-
-//        cronometro.dibujar();
+        configViewport.aplicarViewport(batch);
+        batch.begin();
         textoResultados.dibujar();
 
-        b.end();
+        batch.end();
         stage.act(delta);
         stage.draw();
     }

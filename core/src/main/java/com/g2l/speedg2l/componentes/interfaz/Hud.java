@@ -2,6 +2,7 @@ package com.g2l.speedg2l.componentes.interfaz;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.g2l.speedg2l.componentes.Texto;
 import com.g2l.speedg2l.Cerrable;
 import com.g2l.speedg2l.utilidades.Config;
@@ -13,8 +14,8 @@ public class Hud implements Cerrable {
     private float tiempo;
 
 
-    public Hud() {
-        cronometro = new Texto(Recursos.FUENTE_MENU, 60, Color.WHITE);
+    public Hud(SpriteBatch batch) {
+        cronometro = new Texto(Recursos.FUENTE_MENU, 60, Color.WHITE, batch);
         tiempo = 0.0f;
     }
 
