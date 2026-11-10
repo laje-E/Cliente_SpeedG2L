@@ -24,7 +24,6 @@ import com.g2l.speedg2l.sonidos.Musica;
 import com.g2l.speedg2l.utilidades.Config;
 import com.g2l.speedg2l.utilidades.Entradas;
 import com.g2l.speedg2l.utilidades.Recursos;
-import com.g2l.speedg2l.utilidades.Render;
 
 public class PantallaJuego extends Pantalla {
 
@@ -172,7 +171,7 @@ public class PantallaJuego extends Pantalla {
 
             panelBotones.getContenedor().setVisible(!hiloCliente.isEmpieza() && cuentaRegresiva <= 0);
 
-            Render.limpiarPantalla();
+            limpiarPantalla();
 
             stage.getViewport().apply();
             batch.setProjectionMatrix(stage.getCamera().combined);
@@ -199,7 +198,7 @@ public class PantallaJuego extends Pantalla {
             if (!jugadoresAsignados) {
                 asignarJugadores( );
             } else {
-                Render.limpiarPantalla();
+                limpiarPantalla();
 
                 panelBotones.getContenedor().setVisible(pausado);
 
@@ -365,7 +364,7 @@ public class PantallaJuego extends Pantalla {
 
     private void mostrarMensajeConexion(Texto texto, float delta) {
 
-        Render.limpiarPantalla();
+        limpiarPantalla();
 
         panelBotones.getContenedor().setVisible(true);
 

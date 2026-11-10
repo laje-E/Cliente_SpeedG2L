@@ -18,7 +18,6 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.g2l.speedg2l.componentes.Boton;
 import com.g2l.speedg2l.utilidades.Config;
 import com.g2l.speedg2l.utilidades.ModoPantalla;
-import com.g2l.speedg2l.utilidades.Render;
 import com.g2l.speedg2l.utilidades.Resolucion;
 
 public class PantallaConfig extends Pantalla {
@@ -373,7 +372,7 @@ public class PantallaConfig extends Pantalla {
 
     @Override
     public void render(float delta) {
-        Render.limpiarPantalla();
+        limpiarPantalla();
 
         stage.act(delta);
         stage.draw();
