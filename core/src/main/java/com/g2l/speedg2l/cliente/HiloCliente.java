@@ -37,6 +37,8 @@ public class HiloCliente extends Thread{
 
     private boolean hayEspacio = true;
 
+    private boolean finSesion = false;
+
     public HiloCliente(){
         try {
             direccionServer = InetAddress.getByName("255.255.255.255");
@@ -60,6 +62,17 @@ public class HiloCliente extends Thread{
                 event.printStackTrace();
             }
         }
+    }
+
+    public void reiniciarPartida() {
+        empieza = false;
+        esteClienteTermino = false;
+        todosTerminaron = false;
+        cuentaRegresiva = 0;
+        posicionesFinales = new PosicionFinal[2];
+        posicionJugadores.clear();
+        servidorDesconectado = false;
+        ultimoMensaje = System.currentTimeMillis();
     }
 
     @Override
@@ -138,6 +151,11 @@ public class HiloCliente extends Thread{
 
         if (mensaje.equals(ProtocolosRed.ERROR_LIMITE_CLIENTES)) {
             hayEspacio = false;
+            return;
+        }
+
+        if (mensaje.equals(ProtocolosRed.FIN_SESION)) {
+            finSesion = true;
             return;
         }
 
@@ -252,5 +270,9 @@ public class HiloCliente extends Thread{
 
     public boolean isHayEspacio() {
         return hayEspacio;
+    }
+
+    public boolean isFinSesion() {
+        return finSesion;
     }
 }

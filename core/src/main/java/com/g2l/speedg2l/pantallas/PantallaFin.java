@@ -8,6 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.g2l.speedg2l.cliente.HiloCliente;
+import com.g2l.speedg2l.cliente.ProtocolosRed;
 import com.g2l.speedg2l.componentes.Boton;
 import com.g2l.speedg2l.componentes.PanelBotones;
 import com.g2l.speedg2l.componentes.Texto;
@@ -28,6 +29,12 @@ public class PantallaFin extends Pantalla {
     private PosicionFinal[] posiciones;
     private Texto textoResultados;
     private HiloCliente hiloCliente;
+
+    private boolean desecharHilo = false;
+
+    private long ultimoMensajeEnviado = 0;
+
+    private Boton botonVolverAJugar;
 
     public PantallaFin(Game juego, PosicionFinal[] posiciones, HiloCliente hiloCliente, SpriteBatch b) {
         super(juego, b);
@@ -100,6 +107,11 @@ public class PantallaFin extends Pantalla {
                         com.badlogic.gdx.scenes.scene2d.InputEvent event,
                         float x,
                         float y) {
+
+                        hiloCliente.enviarMensaje(ProtocolosRed.VOLVER_MENU);
+
+                        desecharHilo = true;
+
                         cambiarPantalla(new PantallaMenu(juego, batch));
                     }
                 },
@@ -108,11 +120,46 @@ public class PantallaFin extends Pantalla {
             ),
             PADDING
         );
+
+        botonVolverAJugar = new Boton(
+            "Jugar otra partida",
+            skin,
+            new ClickListener() {
+                @Override
+                public void clicked(
+                    com.badlogic.gdx.scenes.scene2d.InputEvent event,
+                    float x,
+                    float y) {
+
+                    hiloCliente.reiniciarPartida();
+                    hiloCliente.enviarMensaje(ProtocolosRed.JUGAR_OTRA);
+                    cambiarPantalla(new PantallaJuego(juego, batch, hiloCliente));
+
+                }
+            },
+            ANCHO_BOTONES,
+            ALTURA_BOTONES
+        );
+
+        panelBotones.agregarBoton(botonVolverAJugar, PADDING);
     }
 
     @Override
     public void render(float delta) {
         limpiarPantalla();
+
+        boolean sinRival = hiloCliente.isSeDesconectoUnJugador()
+            && hiloCliente.isFinSesion()
+            && hiloCliente.isServidorDesconectado();
+
+
+        botonVolverAJugar.setVisible(sinRival);
+
+        long ahora = System.currentTimeMillis();
+        if (ahora - ultimoMensajeEnviado >= 1000) {
+            hiloCliente.enviarMensaje(ProtocolosRed.ESTAS_AHI);
+            ultimoMensajeEnviado = ahora;
+        }
 
         posiciones = hiloCliente.getPosicionesFinales();
 
@@ -139,7 +186,7 @@ public class PantallaFin extends Pantalla {
 
     @Override
     public void hide() {
-        if (hiloCliente != null) {
+        if (hiloCliente != null && desecharHilo) {
             hiloCliente.finalizarHilo();
         }
     }
@@ -147,7 +194,6 @@ public class PantallaFin extends Pantalla {
 
     @Override
     public void dispose() {
-        hiloCliente.finalizarHilo();
         stage.dispose();
         efectoMeta.cerrar();
     }

@@ -32,5 +32,12 @@ public final class ProtocolosRed {
 
     public static final String CUENTA_REGRESIVA = "CuentaRegresiva";
 
+    public static final String JUGAR_OTRA = "JUGAR_OTRA";
+    public static final String VOLVER_MENU = "VOLVER_MENU";
+
+    public static final String ESPERANDO_REVANCHA = "ESPERANDO_REVANCHA";
+    public static final String NUEVA_PARTIDA = "NUEVA_PARTIDA";
+    public static final String FIN_SESION = "FIN_SESION";
+
     private ProtocolosRed() {}
 }
