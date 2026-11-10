@@ -163,13 +163,13 @@ public class PantallaJuego extends Pantalla {
                 return;
             }
 
-            if (hiloCliente.isServidorDesconectado()) {
-                mostrarMensajeConexion(textoDesconexion, delta);
+            if (hiloCliente.isSeDesconectoUnJugador()) {
+                mostrarMensajeConexion(textojugadorDesconectado, delta);
                 return;
             }
 
-            if (hiloCliente.isSeDesconectoUnJugador()) {
-                mostrarMensajeConexion(textojugadorDesconectado, delta);
+            if (hiloCliente.isServidorDesconectado()) {
+                mostrarMensajeConexion(textoDesconexion, delta);
                 return;
             }
 
