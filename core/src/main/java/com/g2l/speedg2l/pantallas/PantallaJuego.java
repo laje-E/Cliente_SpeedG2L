@@ -28,6 +28,7 @@ import com.g2l.speedg2l.utilidades.Recursos;
 public class PantallaJuego extends Pantalla {
 
     private Stage stage;
+    private Skin skin;
 
     private Jugador jugador;
     private Jugador jugador2;
@@ -89,7 +90,7 @@ public class PantallaJuego extends Pantalla {
         textoEspera.centrar();
         textoEspera.setY(80);
 
-        Skin skin = new Skin(Gdx.files.internal("skin/uiskin.json"));
+        skin = new Skin(Gdx.files.internal("skin/uiskin.json"));
 
         stage = new Stage(
             new FitViewport(
@@ -294,11 +295,45 @@ public class PantallaJuego extends Pantalla {
 
     @Override
     public void dispose() {
-//        stage.dispose();
+        if (stage != null) {
+            stage.dispose();
+        }
+
+        if (skin != null) {
+            skin.dispose();
+        }
+
+        if (pantallaPausa != null) {
+            pantallaPausa.dispose();
+        }
+
         if (musicaJuego != null) {
             musicaJuego.cerrar();
         }
-//        jugador.cerrar();
+
+        if (mapa != null) {
+            mapa.cerrar();
+        }
+
+        if (hud != null) {
+            hud.cerrar();
+        }
+
+        if (jugador != null) {
+            jugador.cerrar();
+        }
+
+        if (jugador2 != null) {
+            jugador2.cerrar();
+        }
+
+        textoPausa.cerrar();
+        textoEspera.cerrar();
+        textoDesconexion.cerrar();
+        textoServidorNoEncontrado.cerrar();
+        textojugadorDesconectado.cerrar();
+        textoCuentaRegresiva.cerrar();
+        textoLimiteClientes.cerrar();
     }
 
     private void dibujarPausa() {

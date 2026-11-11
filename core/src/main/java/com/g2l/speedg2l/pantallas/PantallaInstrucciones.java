@@ -17,6 +17,7 @@ public class PantallaInstrucciones extends Pantalla{
     private Texto texto;
     private PanelBotones panelBotones;
     private Stage stage;
+    private Skin skin;
 
     protected PantallaInstrucciones(Game juego, SpriteBatch b) {
         super(juego, b);
@@ -78,7 +79,7 @@ public class PantallaInstrucciones extends Pantalla{
 
         stage = new Stage(configViewport.getViewport());
 
-        Skin skin = new Skin(Gdx.files.internal("skin/uiskin.json"));
+        skin = new Skin(Gdx.files.internal("skin/uiskin.json"));
 
         crearPanelBotones(skin);
         panelBotones.getContenedor().bottom();
@@ -124,6 +125,20 @@ public class PantallaInstrucciones extends Pantalla{
 
     @Override
     public void dispose() {
-        texto.cerrar();
+        if (titulo != null) {
+            titulo.cerrar();
+        }
+
+        if (texto != null) {
+            texto.cerrar();
+        }
+
+        if (stage != null) {
+            stage.dispose();
+        }
+
+        if (skin != null) {
+            skin.dispose();
+        }
     }
 }

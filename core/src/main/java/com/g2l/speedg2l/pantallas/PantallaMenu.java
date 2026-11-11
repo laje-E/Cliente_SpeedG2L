@@ -21,6 +21,7 @@ public class PantallaMenu extends Pantalla{
     private PanelBotones panelBotones;
     private Imagen imagenFondo;
     private Texto texto;
+    private Skin skin;
 
     public PantallaMenu(Game juego, SpriteBatch b) {
         super(juego, b);
@@ -37,7 +38,7 @@ public class PantallaMenu extends Pantalla{
 
         stage = new Stage(configViewport.getViewport());
 
-        Skin skin = new Skin(Gdx.files.internal("skin/uiskin.json"));
+        skin = new Skin(Gdx.files.internal("skin/uiskin.json"));
 
         crearPanelBotones(skin);
         panelBotones.centrar();
@@ -78,10 +79,22 @@ public class PantallaMenu extends Pantalla{
 
     @Override
     public void dispose() {
-        texto.cerrar();
-        stage.dispose();
-    }
+        if (texto != null) {
+            texto.cerrar();
+        }
 
+        if (imagenFondo != null) {
+            imagenFondo.cerrar();
+        }
+
+        if (stage != null) {
+            stage.dispose();
+        }
+
+        if (skin != null) {
+            skin.dispose();
+        }
+    }
 
     private void crearPanelBotones(Skin skin) {
         panelBotones = new PanelBotones();
