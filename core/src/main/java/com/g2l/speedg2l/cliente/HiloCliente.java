@@ -21,6 +21,7 @@ public class HiloCliente extends Thread{
     private PosicionFinal[] posicionesFinales = new PosicionFinal[2];
     private boolean esteClienteTermino = false;
     private boolean todosTerminaron = false;
+    private boolean elRivalTermino = false;
 
     private boolean empieza = false;
 
@@ -67,6 +68,7 @@ public class HiloCliente extends Thread{
     public void reiniciarPartida() {
         empieza = false;
         esteClienteTermino = false;
+        elRivalTermino = false;
         todosTerminaron = false;
         cuentaRegresiva = 0;
         posicionesFinales = new PosicionFinal[2];
@@ -185,6 +187,9 @@ public class HiloCliente extends Thread{
             if(numeroJugadorCliente == Integer.parseInt(mensajePorPartes[1])){
                 esteClienteTermino = true;
             }
+            else{
+                elRivalTermino = true;
+            }
 
             int idJugador = Integer.parseInt(mensajePorPartes[1]);
             int posicion = Integer.parseInt(mensajePorPartes[2]);
@@ -275,4 +280,9 @@ public class HiloCliente extends Thread{
     public boolean isFinSesion() {
         return finSesion;
     }
+
+    public boolean isElRivalTermino() {
+        return elRivalTermino;
+    }
+
 }

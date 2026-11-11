@@ -258,7 +258,9 @@ public class PantallaJuego extends Pantalla {
                     }
 
                     jugadorLocal.dibujar();
-                    jugadorContrario.dibujar();
+                    if(!hiloCliente.isElRivalTermino()) {
+                        jugadorContrario.dibujar();
+                    }
 
                 batch.end();
 
