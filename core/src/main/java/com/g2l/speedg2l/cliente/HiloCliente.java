@@ -34,7 +34,7 @@ public class HiloCliente extends Thread{
 
     private boolean seDesconectoUnJugador = false;
 
-    private volatile int cuentaRegresiva = 0;
+    private int cuentaRegresiva = 0;
 
     private boolean hayEspacio = true;
 
@@ -85,7 +85,7 @@ public class HiloCliente extends Thread{
             return;
         }
 
-        while (!puertoCliente.isClosed()) {
+        while (!fin && !puertoCliente.isClosed()) {
 
             byte[] data = new byte[1024];
             DatagramPacket dp = new DatagramPacket(data, data.length);
@@ -126,39 +126,42 @@ public class HiloCliente extends Thread{
 
     private void procesarMensaje(DatagramPacket dp){
         String mensaje = (new String (dp.getData())).trim();
-        if (mensaje.equals(ProtocolosRed.ESTOY_ACA)) {
-            servidorConfirmado = true;
-            servidorDesconectado=false;
-            return;
-        }
-        if (mensaje.equals(ProtocolosRed.JUGADOR_DESCONECTADO)){
-            seDesconectoUnJugador = true;
-            return;
-        }
-        if (mensaje.equals(ProtocolosRed.OK)){
-            direccionServer = dp.getAddress();
-            servidorConfirmado = true;
-            servidorDesconectado = false;
-            return;
-        }
-        if(mensaje.equals(ProtocolosRed.EMPEZAR)){
-            empieza = true;
-            return;
-        }
+        evaluarMensaje(mensaje, dp);
+    }
 
-        if (mensaje.equals(ProtocolosRed.TODOS_TERMINARON)) {
-            todosTerminaron = true;
-            return;
-        }
-
-        if (mensaje.equals(ProtocolosRed.ERROR_LIMITE_CLIENTES)) {
-            hayEspacio = false;
-            return;
-        }
-
-        if (mensaje.equals(ProtocolosRed.FIN_SESION)) {
-            finSesion = true;
-            return;
+    private void evaluarMensaje(String mensaje, DatagramPacket dp){
+        switch (mensaje) {
+            case ProtocolosRed.ESTOY_ACA -> {
+                servidorConfirmado = true;
+                servidorDesconectado = false;
+                return;
+            }
+            case ProtocolosRed.JUGADOR_DESCONECTADO -> {
+                seDesconectoUnJugador = true;
+                return;
+            }
+            case ProtocolosRed.OK -> {
+                direccionServer = dp.getAddress();
+                servidorConfirmado = true;
+                servidorDesconectado = false;
+                return;
+            }
+            case ProtocolosRed.EMPEZAR -> {
+                empieza = true;
+                return;
+            }
+            case ProtocolosRed.TODOS_TERMINARON -> {
+                todosTerminaron = true;
+                return;
+            }
+            case ProtocolosRed.ERROR_LIMITE_CLIENTES -> {
+                hayEspacio = false;
+                return;
+            }
+            case ProtocolosRed.FIN_SESION -> {
+                finSesion = true;
+                return;
+            }
         }
 
         String[] mensajePorPartes = mensaje.split(ProtocolosRed.SEPARADOR);
@@ -183,9 +186,7 @@ public class HiloCliente extends Thread{
         if (mensajePorPartes[0].equals(ProtocolosRed.CUENTA_REGRESIVA)) {
             cuentaRegresiva = Integer.parseInt(mensajePorPartes[1]);
         }
-
     }
-
 
     private void procesarMovimiento(String[] mensajePorPartes) {
         final int X = 0, Y = 1;
@@ -241,9 +242,10 @@ public class HiloCliente extends Thread{
 
 
     public void finalizarHilo() {
-        if (puertoCliente != null) {
+        fin = true;
+
+        if (puertoCliente != null && !puertoCliente.isClosed()) {
             puertoCliente.close();
-            fin=true;
         }
     }
 
