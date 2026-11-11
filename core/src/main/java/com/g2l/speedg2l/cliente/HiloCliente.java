@@ -178,22 +178,6 @@ public class HiloCliente extends Thread{
 
         if (mensajePorPartes[0].equals(ProtocolosRed.LLEGO)) {
             procesarLlegada(mensajePorPartes);
-//        if(mensajePorPartes[0].equals(ProtocolosRed.LLEGO)){
-//            if(numeroJugadorCliente == Integer.parseInt(mensajePorPartes[1])){
-//                esteClienteTermino = true;
-//            }
-//            else{
-//                elRivalTermino = true;
-//            }
-//
-//            int idJugador = Integer.parseInt(mensajePorPartes[1]);
-//            int posicion = Integer.parseInt(mensajePorPartes[2]);
-//            float tiempo = Float.parseFloat(mensajePorPartes[3]);
-//            posicionesFinales[posicion - 1] = new PosicionFinal(tiempo, idJugador, posicion);
-//
-//            if(posicion == 2){
-//                todosTerminaron = true;
-//            }
         }
 
         if (mensajePorPartes[0].equals(ProtocolosRed.CUENTA_REGRESIVA)) {
@@ -221,16 +205,16 @@ public class HiloCliente extends Thread{
 
 
     private void procesarLlegada(String[] mensajePorPartes) {
-        if (numeroJugadorCliente == Integer.parseInt(mensajePorPartes[1])) {
+        int idJugador = Integer.parseInt(mensajePorPartes[1]);
+        int posicion = Integer.parseInt(mensajePorPartes[2]);
+        float tiempo = Float.parseFloat(mensajePorPartes[3]);
+
+        if (numeroJugadorCliente == idJugador) {
             esteClienteTermino = true;
         }
         else {
             elRivalTermino = true;
         }
-
-        int idJugador = Integer.parseInt(mensajePorPartes[1]);
-        int posicion = Integer.parseInt(mensajePorPartes[2]);
-        float tiempo = Float.parseFloat(mensajePorPartes[3]);
 
         posicionesFinales[posicion - 1] = new PosicionFinal(tiempo, idJugador, posicion);
 
