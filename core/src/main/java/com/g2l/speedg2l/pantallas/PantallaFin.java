@@ -149,11 +149,10 @@ public class PantallaFin extends Pantalla {
         limpiarPantalla();
 
         boolean sinRival = hiloCliente.isSeDesconectoUnJugador()
-            && hiloCliente.isFinSesion()
-            && hiloCliente.isServidorDesconectado();
+            || hiloCliente.isFinSesion()
+            || hiloCliente.isServidorDesconectado();
 
-
-        botonVolverAJugar.setVisible(sinRival);
+        botonVolverAJugar.setVisible(!sinRival);
 
         long ahora = System.currentTimeMillis();
         if (ahora - ultimoMensajeEnviado >= 1000) {
