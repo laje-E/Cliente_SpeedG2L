@@ -68,8 +68,15 @@ public class PantallaJuego extends Pantalla {
 
     private Texto textoLimiteClientes = new Texto(Recursos.FUENTE_MENU, 48, Color.RED, batch);
 
+    // Se utiliza al comenzar una sesión nueva desde el menú.
     protected PantallaJuego(Game juego, SpriteBatch b) {
         super(juego, b);
+    }
+
+    // Se utiliza cuando se quiere reutilizar una conexión existente.
+    protected PantallaJuego(Game juego, SpriteBatch b, HiloCliente hiloCliente) {
+        super(juego, b);
+        this.hiloCliente = hiloCliente;
     }
 
     @Override
@@ -121,12 +128,14 @@ public class PantallaJuego extends Pantalla {
         textoLimiteClientes.centrar();
         textoLimiteClientes.setY(80);
 
-        hiloCliente = new HiloCliente();
-        hiloCliente.start();
+        if (hiloCliente == null){
+            hiloCliente = new HiloCliente();
+            hiloCliente.start();
 
-        inicioIntentoConexion = System.currentTimeMillis();
-        ultimoMensajeEnviado = inicioIntentoConexion;
-        hiloCliente.enviarMensaje(ProtocolosRed.CONEXION);
+            inicioIntentoConexion = System.currentTimeMillis();
+            ultimoMensajeEnviado = inicioIntentoConexion;
+            hiloCliente.enviarMensaje(ProtocolosRed.CONEXION);
+        }
     }
 
     private void agregarAlStage() {
@@ -159,6 +168,11 @@ public class PantallaJuego extends Pantalla {
                 return;
             }
 
+            if (hiloCliente.isSeDesconectoUnJugador()) {
+                mostrarMensajeConexion(textojugadorDesconectado, delta);
+                return;
+            }
+
             if (servidorNoEncontrado) {
                 mostrarMensajeConexion(textoServidorNoEncontrado, delta);
                 return;
@@ -173,7 +187,6 @@ public class PantallaJuego extends Pantalla {
                 mostrarMensajeConexion(textoDesconexion, delta);
                 return;
             }
-
 
             PosicionFinal[] posicionesFinales = hiloCliente.getPosicionesFinales();
 
@@ -246,7 +259,9 @@ public class PantallaJuego extends Pantalla {
                     }
 
                     jugadorLocal.dibujar();
-                    jugadorContrario.dibujar();
+                    if(!hiloCliente.isElRivalTermino()) {
+                        jugadorContrario.dibujar();
+                    }
 
                 batch.end();
 

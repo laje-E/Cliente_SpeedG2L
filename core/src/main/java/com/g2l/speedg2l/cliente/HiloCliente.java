@@ -21,6 +21,7 @@ public class HiloCliente extends Thread{
     private PosicionFinal[] posicionesFinales = new PosicionFinal[2];
     private boolean esteClienteTermino = false;
     private boolean todosTerminaron = false;
+    private boolean elRivalTermino = false;
 
     private boolean empieza = false;
 
@@ -36,25 +37,19 @@ public class HiloCliente extends Thread{
     private volatile int cuentaRegresiva = 0;
 
     private boolean hayEspacio = true;
-    private boolean elRivalTermino = false;
+
+    private boolean finSesion = false;
 
     public HiloCliente(){
         try {
             direccionServer = InetAddress.getByName("255.255.255.255");
             puertoCliente = new DatagramSocket();
             puertoCliente.setSoTimeout(1000);
-//            inicializarHashMap();
         }catch (SocketException | UnknownHostException evento){
             evento.printStackTrace();
         }
     }
 
-//    private void inicializarHashMap() {
-//        float[] arrayDeCeros = {0, 33};
-//        for(int i=0; i<Jugadores.values().length; i++){
-//            posicionJugadores.put(Jugadores.values()[i], arrayDeCeros);
-//        }
-//    }
 
     public void enviarMensaje(String mensaje){
         if(puertoCliente == null || puertoCliente.isClosed()){
@@ -68,6 +63,18 @@ public class HiloCliente extends Thread{
                 event.printStackTrace();
             }
         }
+    }
+
+    public void reiniciarPartida() {
+        empieza = false;
+        esteClienteTermino = false;
+        elRivalTermino = false;
+        todosTerminaron = false;
+        cuentaRegresiva = 0;
+        posicionesFinales = new PosicionFinal[2];
+        posicionJugadores.clear();
+        servidorDesconectado = false;
+        ultimoMensaje = System.currentTimeMillis();
     }
 
     @Override
@@ -149,6 +156,11 @@ public class HiloCliente extends Thread{
             return;
         }
 
+        if (mensaje.equals(ProtocolosRed.FIN_SESION)) {
+            finSesion = true;
+            return;
+        }
+
         String[] mensajePorPartes = mensaje.split(ProtocolosRed.SEPARADOR);
 
         if (mensajePorPartes[0].equals(ProtocolosRed.NUMERO_JUGADOR)) {
@@ -166,6 +178,22 @@ public class HiloCliente extends Thread{
 
         if (mensajePorPartes[0].equals(ProtocolosRed.LLEGO)) {
             procesarLlegada(mensajePorPartes);
+//        if(mensajePorPartes[0].equals(ProtocolosRed.LLEGO)){
+//            if(numeroJugadorCliente == Integer.parseInt(mensajePorPartes[1])){
+//                esteClienteTermino = true;
+//            }
+//            else{
+//                elRivalTermino = true;
+//            }
+//
+//            int idJugador = Integer.parseInt(mensajePorPartes[1]);
+//            int posicion = Integer.parseInt(mensajePorPartes[2]);
+//            float tiempo = Float.parseFloat(mensajePorPartes[3]);
+//            posicionesFinales[posicion - 1] = new PosicionFinal(tiempo, idJugador, posicion);
+//
+//            if(posicion == 2){
+//                todosTerminaron = true;
+//            }
         }
 
         if (mensajePorPartes[0].equals(ProtocolosRed.CUENTA_REGRESIVA)) {
@@ -282,4 +310,9 @@ public class HiloCliente extends Thread{
     public boolean isHayEspacio() {
         return hayEspacio;
     }
+
+    public boolean isFinSesion() {
+        return finSesion;
+    }
+
 }
