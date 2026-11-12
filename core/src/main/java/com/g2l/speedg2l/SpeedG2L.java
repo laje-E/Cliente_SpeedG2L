@@ -12,7 +12,7 @@ public class SpeedG2L extends Game {
     @Override
     public void create() {
         batch = new SpriteBatch();
-        this.setScreen(new PantallaMenu(this, batch));
+        this.setScreen(new PantallaCarga(this, batch));
     }
 
     @Override
